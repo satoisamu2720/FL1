@@ -206,6 +206,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1168749267 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2988033423889290510, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+  m_PrefabInstance: {fileID: 434294289751905039}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &434294289751905039
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -277,6 +282,34 @@ PrefabInstance:
     - target: {fileID: 7367624681414968511, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: swingArc
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: spinSpeed
+      value: 720
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: swingAngle
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: swordPrefab
+      value: 
+      objectReference: {fileID: 1168749267}
+    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: spinDuration
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: holdThreshold
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: attackDuration
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
