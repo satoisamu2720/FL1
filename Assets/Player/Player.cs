@@ -6,15 +6,25 @@ public class Player : MonoBehaviour
 
     public Rigidbody2D rb;
     private Vector2 movement;
-    private Vector2 lastMoveDir = Vector2.down; // 初期は下向き
+    private Vector2 lastMoveDir = Vector2.down;
 
     [Header("攻撃パラメータ")]
-    public GameObject swordHitbox;        // 攻撃判定オブジェクト
-    public float attackDuration = 0.5f;  // 攻撃全体の時間
-    public float swingAngle = 90f;        // スイングの角度幅
-    public float hitboxDistance = 1.0f;   // プレイヤーからの距離
+    public GameObject swordHitbox;        // 剣の当たり判定プレハブ
+    public float attackDuration = 0.2f;   // 通常攻撃(スウィング)の時間
+    public float hitboxDistance = 0.6f;   // プレイヤーからの距離
+    public float swingArc = 75f;          // スウィングの回転角度
 
-    private bool isAttacking = false;
+    [Header("回転攻撃パラメータ")]
+    public float spinDuration = 0.6f;     // 回転攻撃の時間
+    public float spinSpeed = 720f;        // 回転速度（°/秒）
+
+    [Header("長押し判定")]
+    public float holdThreshold = 0.3f;    // 長押しと判定するまでの時間
+
+    private enum AttackState { None, Swing, Charge, Spin }
+    private AttackState attackState = AttackState.None;
+
+    private float attackHoldTime = 0f; // ボタン押しっぱなし時間計測
 
     void Start()
     {
@@ -26,19 +36,19 @@ public class Player : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {
-            Attack();
+            HandleAttackInput();
         }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        if (GameManager.Instance != null && !GameManager.Instance.isPause && !isAttacking)
+        if (GameManager.Instance != null && !GameManager.Instance.isPause && attackState == AttackState.None)
         {
             movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
             if (movement != Vector2.zero)
             {
-                lastMoveDir = movement; // 最後に動いた方向を記憶
+                lastMoveDir = movement;
             }
 
             MovePlayer();
@@ -50,36 +60,103 @@ public class Player : MonoBehaviour
         rb.MovePosition(rb.position + movement * Status.Instance.PlayerSpeed * Time.deltaTime);
     }
 
-    private void Attack()
+    private void HandleAttackInput()
     {
-        if (Input.GetMouseButtonDown(0) && !isAttacking)
+        // 押した瞬間：通常攻撃開始
+        if (Input.GetButtonDown("Fire1") && attackState == AttackState.None)
         {
+            attackHoldTime = 0f;
             StartCoroutine(SwingAttack());
+        }
+
+        // 押している間：ホールド時間をカウント
+        if (Input.GetButton("Fire1"))
+        {
+            attackHoldTime += Time.deltaTime;
+        }
+
+        // 離した瞬間：回転斬り発動
+        if (Input.GetButtonUp("Fire1"))
+        {
+            if (attackState == AttackState.Charge)
+            {
+                StartCoroutine(SpinAttack());
+            }
         }
     }
 
     private System.Collections.IEnumerator SwingAttack()
     {
-        isAttacking = true;
+        attackState = AttackState.Swing;
         swordHitbox.SetActive(true);
 
-        // 基本方向を算出（8方向）
+        // 基本の角度を計算
         float baseAngle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
-        float snappedAngle = Mathf.Round(baseAngle / 45f) * 45f;
-
-        // スイングの開始・終了角度
-        float startAngle = snappedAngle - swingAngle / 2f;
-        float endAngle = snappedAngle + swingAngle / 2f;
+        float startAngle = baseAngle - swingArc / 2f;
+        float endAngle = baseAngle + swingArc / 2f;
 
         float elapsed = 0f;
 
         while (elapsed < attackDuration)
         {
             float t = elapsed / attackDuration;
-            // 開始から終了に向けて角度補間
             float currentAngle = Mathf.Lerp(startAngle, endAngle, t);
 
-            // offset計算
+            Vector3 offset = new Vector3(
+                Mathf.Cos(currentAngle * Mathf.Deg2Rad),
+                Mathf.Sin(currentAngle * Mathf.Deg2Rad),
+                0
+            ) * hitboxDistance;
+
+            swordHitbox.transform.localPosition = offset;
+            swordHitbox.transform.localRotation = Quaternion.Euler(0, 0, currentAngle);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // スウィング後：まだ押していて、かつ長押し判定を超えていたら突きへ
+        if (Input.GetButton("Fire1") && attackHoldTime >= holdThreshold)
+        {
+            attackState = AttackState.Charge;
+            HoldThrust();
+        }
+        else
+        {
+            swordHitbox.SetActive(false);
+            attackState = AttackState.None;
+        }
+    }
+
+    private void HoldThrust()
+    {
+        // 突き：向いてる方向に剣を出したまま固定
+        float baseAngle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
+        float snappedAngle = Mathf.Round(baseAngle / 45f) * 45f;
+
+        Vector3 offset = new Vector3(
+            Mathf.Cos(snappedAngle * Mathf.Deg2Rad),
+            Mathf.Sin(snappedAngle * Mathf.Deg2Rad),
+            0
+        ) * hitboxDistance;
+
+        swordHitbox.transform.localPosition = offset;
+        swordHitbox.transform.localRotation = Quaternion.Euler(0, 0, snappedAngle);
+    }
+
+    private System.Collections.IEnumerator SpinAttack()
+    {
+        attackState = AttackState.Spin;
+        float elapsed = 0f;
+        swordHitbox.SetActive(true);
+
+        // 今の突きの角度から回転開始
+        float startAngle = swordHitbox.transform.localEulerAngles.z;
+
+        while (elapsed < spinDuration)
+        {
+            float currentAngle = startAngle + elapsed * spinSpeed;
+
             Vector3 offset = new Vector3(
                 Mathf.Cos(currentAngle * Mathf.Deg2Rad),
                 Mathf.Sin(currentAngle * Mathf.Deg2Rad),
@@ -94,7 +171,7 @@ public class Player : MonoBehaviour
         }
 
         swordHitbox.SetActive(false);
-        isAttacking = false;
+        attackState = AttackState.None;
     }
 
     void Awake()
