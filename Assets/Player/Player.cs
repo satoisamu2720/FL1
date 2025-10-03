@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
     // リギドボディ2D
     public Rigidbody2D rb;
     // 移動用変数
-    private Vector2 movement;
+    private Vector2 movement;  
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
