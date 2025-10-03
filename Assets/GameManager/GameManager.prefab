@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3049207185176134562}
+  - component: {fileID: 5396815605260785691}
+  - component: {fileID: 2054212918451761864}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -31,3 +33,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5396815605260785691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180511395767293915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9bbf899f436238488bf6eec37b758cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPause: 0
+--- !u!114 &2054212918451761864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180511395767293915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d89e232a2a5b06d4a920cb1d9259d6d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerHp: 5
+  PlayerSpeed: 3
+  PlayerDashSpeed: 1
+  PlayerDashCoolTime: 2
