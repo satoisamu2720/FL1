@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     public Rigidbody2D rb;
     private Vector2 movement;
     private Vector2 lastMoveDir = Vector2.down;
+    private Vector2 attackDir;
 
     [Header("攻撃パラメータ")]
     public GameObject swordHitbox;        // 剣の当たり判定プレハブ
@@ -35,14 +36,17 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
-        {
-            HandleAttackInput();
+        { // 剣を持っていなければ攻撃できない
+            if (Inventory.Instance.HasItem(2))
+            {
+                HandleAttackInput(); 
+            }
         }
     }
 
     void FixedUpdate()
     {
-        if (GameManager.Instance != null && !GameManager.Instance.isPause && attackState == AttackState.None)
+        if (GameManager.Instance != null && !GameManager.Instance.isPause )
         {
             movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
@@ -51,13 +55,27 @@ public class Player : MonoBehaviour
                 lastMoveDir = movement;
             }
 
-            MovePlayer();
+            switch (attackState)
+            {
+                case AttackState.None:
+                    MovePlayer(Status.Instance.PlayerSpeed);
+                    break;
+
+                case AttackState.Charge:
+                    // チャージ中も低速で移動
+                    MovePlayer(Status.Instance.PlayerSpeed * 0.4f);
+                    break;
+
+                default:
+                    // Swing, Spin中は動けない
+                    break;
+            }
         }
     }
 
-    private void MovePlayer()
+    private void MovePlayer(float speed)
     {
-        rb.MovePosition(rb.position + movement * Status.Instance.PlayerSpeed * Time.deltaTime);
+        rb.MovePosition(rb.position + movement * speed * Time.deltaTime);
     }
 
     private void HandleAttackInput()
@@ -66,6 +84,10 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Fire1") && attackState == AttackState.None)
         {
             attackHoldTime = 0f;
+
+            // 攻撃開始時の方向を固定
+            attackDir = (movement != Vector2.zero) ? movement : lastMoveDir;
+
             StartCoroutine(SwingAttack());
         }
 
@@ -84,6 +106,7 @@ public class Player : MonoBehaviour
             }
         }
     }
+
 
     private System.Collections.IEnumerator SwingAttack()
     {
@@ -130,8 +153,8 @@ public class Player : MonoBehaviour
 
     private void HoldThrust()
     {
-        // 突き：向いてる方向に剣を出したまま固定
-        float baseAngle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
+        // 押した瞬間の方向に固定
+        float baseAngle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
         float snappedAngle = Mathf.Round(baseAngle / 45f) * 45f;
 
         Vector3 offset = new Vector3(
@@ -150,12 +173,12 @@ public class Player : MonoBehaviour
         float elapsed = 0f;
         swordHitbox.SetActive(true);
 
-        // 今の突きの角度から回転開始
-        float startAngle = swordHitbox.transform.localEulerAngles.z;
+        // 攻撃開始方向を基準に回転
+        float baseAngle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
 
         while (elapsed < spinDuration)
         {
-            float currentAngle = startAngle + elapsed * spinSpeed;
+            float currentAngle = baseAngle + elapsed * spinSpeed;
 
             Vector3 offset = new Vector3(
                 Mathf.Cos(currentAngle * Mathf.Deg2Rad),
