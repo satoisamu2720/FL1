@@ -1,10 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerItemUse : MonoBehaviour
 {
-    private Vector2 lastMoveDir = Vector2.down; // 初期向き
+    [Header("UI")]
+    public Image equippedItemIcon; // EquippedItemIcon をアサイン
+    public Sprite defaultSprite;   // 空のときの透明アイコンなど
+
+    private Vector2 lastMoveDir = Vector2.down;
     void Start()
     {
+        
         // 初期所持アイテム
         Inventory.Instance.AddItem(0); // 弓
         Inventory.Instance.AddItem(1); // 爆弾
@@ -17,88 +23,88 @@ public class PlayerItemUse : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {
-            // プレイヤーの移動方向を取得（向きの更新）
             Vector2 inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            if (inputDir.sqrMagnitude > 0.01f)
-                lastMoveDir = inputDir.normalized;
+            if (inputDir.sqrMagnitude > 0.01f) lastMoveDir = inputDir.normalized;
 
-            // 弓 or 爆弾使用
             if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.JoystickButton2))
             {
-                UseSelectedItem();
+                UseEquippedItem();
             }
 
-            // アイテム選択切替
-            if (Input.GetKeyDown(KeyCode.E) || (Input.GetKeyDown(KeyCode.JoystickButton5)))
-            {
-                Inventory.Instance.NextItem();
-            }
-
-            // アイテム選択切替
             if (Input.GetKeyDown(KeyCode.Q) || (Input.GetKeyDown(KeyCode.JoystickButton4)))
             {
                 Status.Instance.RecoverMP(10);
             }
 
+
+        }
+        UpdateEquippedItemUI();
+    }
+
+    void UpdateEquippedItemUI()
+    {
+        var item = Inventory.Instance.GetEquippedItem();
+        if (item != null && item.icon != null)
+        {
+            equippedItemIcon.sprite = item.icon;
+            equippedItemIcon.color = Color.white;
+        }
+        else
+        {
+            equippedItemIcon.sprite = defaultSprite;
+            equippedItemIcon.color = new Color(1, 1, 1, 0); // 透明にする
         }
     }
 
-    void UseSelectedItem()
+    void UseEquippedItem()
     {
-        var item = Inventory.Instance.GetSelectedItem();
+        var item = Inventory.Instance.GetEquippedItem();
         if (item == null)
         {
-            Debug.Log("アイテムが選択されていません。");
+            Debug.Log("装備アイテムがありません");
             return;
         }
 
-        // 魔力チェック
         if (!Status.Instance.UseMP(item.mpCost))
         {
-            Debug.Log("魔力が足りません！");
+            Debug.Log("MPが足りません！");
             return;
         }
-
-        Debug.Log($"使用: {item.itemName}, 消費MP: {item.mpCost}");
 
         switch (item.itemID)
         {
-            case 0: // 弓
-                ShootArrow(item);
+            case 0: ShootArrow(item); 
                 break;
-            case 1: // 爆弾
+            case 1:
                 if (item.itemPrefab != null)
+                {
                     Instantiate(item.itemPrefab, transform.position, Quaternion.identity);
+                }
                 break;
-            default:
-                Debug.Log("使用処理未定義のアイテム");
+            default: Debug.Log($"{item.itemName} を使用した！");
                 break;
         }
     }
+
     void ShootArrow(ItemData bowItem)
     {
         if (bowItem.itemPrefab == null)
         {
-            Debug.LogWarning("弓のPrefab（矢）が設定されていません！");
+            Debug.LogWarning("弓のPrefabが設定されていません！");
             return;
         }
 
-        // 矢の生成位置（プレイヤーの少し前）
         Vector3 spawnPos = transform.position + (Vector3)lastMoveDir * 0.5f;
-
-        // 向きを計算（プレイヤーが向いている方向）
         float angle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
         Quaternion rot = Quaternion.Euler(0, 0, angle);
-
         GameObject arrow = Instantiate(bowItem.itemPrefab, spawnPos, rot);
 
-        // 矢に速度を与える
         Rigidbody2D rb = arrow.GetComponent<Rigidbody2D>();
+
         if (rb != null)
         {
-            rb.linearVelocity = lastMoveDir * 10f; // ← 発射速度（調整可）
+            rb.linearVelocity = lastMoveDir * 10f;
         }
-
-        Debug.Log("矢を放った！");
     }
+    
 }

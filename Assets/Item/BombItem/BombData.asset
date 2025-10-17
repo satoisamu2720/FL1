@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: 1
   itemName: Bomb
-  icon: {fileID: 0}
+  icon: {fileID: -1483665779731714255, guid: 5fc6b025b52208f4fa6e6f0ccf897493, type: 3}
   description: "\u7206\u5F3E"
   usable: 1
   itemType: 2

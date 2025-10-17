@@ -4,15 +4,20 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
     public static Inventory Instance { get; private set; }
-    public ItemDatabase itemDatabase; // ← Inspector で ItemDatabase.asset を割り当てる
+    public ItemDatabase itemDatabase;
 
     private List<int> ownedItemIDs = new List<int>();
     private int selectedIndex = 0;
+
+    //装備中のアイテムを保持
+    private ItemData equippedItem;
 
     public void AddItem(int id)
     {
         if (!ownedItemIDs.Contains(id)) ownedItemIDs.Add(id);
     }
+
+    public List<int> GetOwnedIDs() => ownedItemIDs;
 
     public ItemData GetSelectedItem()
     {
@@ -21,18 +26,20 @@ public class Inventory : MonoBehaviour
         return itemDatabase.GetItemByID(id);
     }
 
-    public void NextItem()
+    public void EquipItem(int id)
     {
-        if (ownedItemIDs.Count == 0) return;
-        int next =  selectedIndex = (selectedIndex + 1) % ownedItemIDs.Count;
-        while (ownedItemIDs[next] == 2)
+        var item = itemDatabase.GetItemByID(id);
+        if (item != null)
         {
-            next = (next + 1 )% ownedItemIDs.Count;
+            equippedItem = item;
+            Debug.Log($"{item.itemName} を装備しました");
         }
+    }
 
-        selectedIndex = next;
-
-        Debug.Log($"選択: {GetSelectedItem()?.itemName} (ID:{GetSelectedItem()?.itemID})");
+    //現在装備中アイテムを取得
+    public ItemData GetEquippedItem()
+    {
+        return equippedItem;
     }
 
     public bool HasItem(int id) => ownedItemIDs.Contains(id);

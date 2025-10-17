@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: 0
   itemName: Bow
-  icon: {fileID: 0}
+  icon: {fileID: -7856493677412862020, guid: dfb4522b035885446a9ef8581c81f916, type: 3}
   description: "\u5F13\u77E2"
   usable: 1
   itemType: 2
