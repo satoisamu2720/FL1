@@ -142,7 +142,7 @@ public class DivisionEnemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Bullet"))
+        if (collision.CompareTag("SwordHitbox"))
         {
             if (!isInvincible)
             {

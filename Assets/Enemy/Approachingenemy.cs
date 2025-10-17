@@ -235,7 +235,7 @@ public class Approachingenemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Bullet"))
+        if (collision.CompareTag("SwordHitbox"))
         {
             TakeDamage(1);
             Destroy(collision.gameObject);
