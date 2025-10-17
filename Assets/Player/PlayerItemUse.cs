@@ -106,5 +106,7 @@ public class PlayerItemUse : MonoBehaviour
             rb.linearVelocity = lastMoveDir * 10f;
         }
     }
+
+
     
 }
