@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Status : MonoBehaviour
 {
@@ -6,9 +7,15 @@ public class Status : MonoBehaviour
 
     [Header("プレイヤーステータス")]
     public int PlayerHp = 5;
+    public int PlayerMP = 10;
     public float PlayerSpeed = 1.0f;
     public float PlayerDashSpeed = 1.0f;
     public float PlayerDashCoolTime = 2.0f;
+    public int MaxMP = 10;
+
+    [Header("MPバーUI")]
+    public Image mpFillImage;
+
 
     [System.Serializable]
     public class UserData
@@ -25,7 +32,7 @@ public class Status : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        UpdateMPUI();
     }
     
     // Update is called once per frame
@@ -33,9 +40,34 @@ public class Status : MonoBehaviour
     {
         
     }
+    public bool UseMP(int amount)
+    {
+        if (PlayerMP >= amount)
+        {
+            PlayerMP = Mathf.Clamp(PlayerMP - amount, 0, MaxMP);
+            UpdateMPUI();
+            return true;
+        }
+        return false;
+    }
+    public void RecoverMP(int amount)
+    {
+        PlayerMP = Mathf.Clamp(PlayerMP + amount, 0, MaxMP);
+        UpdateMPUI();
+    }
+
+    void UpdateMPUI()
+    {
+        if (mpFillImage != null)
+        {
+            mpFillImage.fillAmount = (float)PlayerMP / MaxMP;
+        }
+    }
+
     void Awake()
     {
         Instance = this;
+        PlayerMP = MaxMP;
     }
 
     void OnDestroy()

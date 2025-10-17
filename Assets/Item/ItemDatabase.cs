@@ -1,16 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemDatabase : MonoBehaviour
+[CreateAssetMenu(fileName = "ItemDatabase", menuName = "Game/ItemDatabase")]
+public class ItemDatabase : ScriptableObject
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public List<ItemData> items = new List<ItemData>();
 
-    // Update is called once per frame
-    void Update()
+    public ItemData GetItemByID(int id)
     {
-        
+        return items.Find(i => i.itemID == id);
     }
 }
