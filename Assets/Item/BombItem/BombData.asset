@@ -19,4 +19,4 @@ MonoBehaviour:
   usable: 1
   itemType: 2
   itemPrefab: {fileID: 3535374379266375622, guid: 8c2af8574feea8f4892805e994810d09, type: 3}
-  mpCost: 1
+  mpCost: 4
