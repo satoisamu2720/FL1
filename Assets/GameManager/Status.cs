@@ -13,8 +13,8 @@ public class Status : MonoBehaviour
     public float PlayerDashCoolTime = 2.0f;
     public int MaxMP = 10;
 
-    [Header("UI")]
-    public Slider mpSlider;
+    [Header("MPバーUI")]
+    public Image mpFillImage;
 
 
     [System.Serializable]
@@ -32,7 +32,7 @@ public class Status : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        UpdateMPUI();
     }
     
     // Update is called once per frame
@@ -40,36 +40,27 @@ public class Status : MonoBehaviour
     {
         
     }
-    // 魔力消費
     public bool UseMP(int amount)
     {
         if (PlayerMP >= amount)
         {
-            PlayerMP -= amount;
+            PlayerMP = Mathf.Clamp(PlayerMP - amount, 0, MaxMP);
             UpdateMPUI();
             return true;
         }
-        return false; // 足りない
+        return false;
     }
-
-    // 魔力回復
     public void RecoverMP(int amount)
     {
-        PlayerMP = Mathf.Min(PlayerMP + amount, MaxMP);
+        PlayerMP = Mathf.Clamp(PlayerMP + amount, 0, MaxMP);
         UpdateMPUI();
     }
 
-    private void UpdateMPUI()
+    void UpdateMPUI()
     {
-        Debug.Log($"MP更新: {PlayerMP}/{MaxMP}");
-        if (mpSlider != null)
+        if (mpFillImage != null)
         {
-            mpSlider.value = (float)PlayerMP / MaxMP;
-            Debug.Log($"スライダー値: {mpSlider.value}");
-        }
-        else
-        {
-            Debug.LogWarning("MPBarのSliderが未設定です！");
+            mpFillImage.fillAmount = (float)PlayerMP / MaxMP;
         }
     }
 
@@ -77,7 +68,6 @@ public class Status : MonoBehaviour
     {
         Instance = this;
         PlayerMP = MaxMP;
-        UpdateMPUI();
     }
 
     void OnDestroy()
