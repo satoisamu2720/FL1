@@ -1080,6 +1080,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equippedItemIcon: {fileID: 942166444}
   defaultSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  mpRecoveryInterval: 1
+  mpRecoveryDelay: 1.5
 --- !u!58 &1168749273
 CircleCollider2D:
   m_ObjectHideFlags: 0
