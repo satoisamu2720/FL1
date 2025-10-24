@@ -6,12 +6,13 @@ public class Status : MonoBehaviour
     public static Status Instance { get; private set; }
 
     [Header("プレイヤーステータス")]
-    public int PlayerHp = 5;
-    public int PlayerMP = 10;
+    public float PlayerHP = 5;
+    public float PlayerMP = 10;
     public float PlayerSpeed = 1.0f;
     public float PlayerDashSpeed = 1.0f;
     public float PlayerDashCoolTime = 2.0f;
-    public int MaxMP = 10;
+    public float MaxMP = 10;
+    public float MaxHP = 10;
 
     [Header("MPバーUI")]
     public Image mpFillImage;
