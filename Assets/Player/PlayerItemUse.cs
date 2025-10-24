@@ -17,7 +17,7 @@ public class PlayerItemUse : MonoBehaviour
 
     void Start()
     {
-        Inventory.Instance.AddItem(0); // Œ•
+        
 
         var item = Inventory.Instance.GetSelectedItem();
         if (item != null)
@@ -41,6 +41,10 @@ public class PlayerItemUse : MonoBehaviour
         {
             //Inventory.Instance.AddItem(0); // ‹|
             Inventory.Instance.AddItem(2); // ”š’e
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        { 
+            Inventory.Instance.AddItem(0); // Œ•
         }
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {

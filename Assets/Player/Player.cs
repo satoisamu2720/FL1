@@ -36,8 +36,11 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
-        { // Œ•‚ğ‚Á‚Ä‚¢‚È‚¯‚ê‚ÎUŒ‚‚Å‚«‚È‚¢
-            if (Inventory.Instance.GetEquippedItem()?.itemID == 0)
+        {
+            var equipped = Inventory.Instance.GetEquippedItem();
+
+            // Œ•‚ğ‘•”õÏ‚İ‚È‚çí‚Ég‚¦‚é
+            if (Inventory.Instance.HasSword())
             {
                 HandleAttackInput();
             }
