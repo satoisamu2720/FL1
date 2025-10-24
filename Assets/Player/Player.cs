@@ -1,12 +1,15 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
-    // ƒŠƒMƒhƒ{ƒfƒB2D
+    // ï¿½ï¿½ï¿½Mï¿½hï¿½{ï¿½fï¿½B2D
     public Rigidbody2D rb;
-    // ˆÚ“®—p•Ï”
-    private Vector2 movement;  
+    // ï¿½Ú“ï¿½ï¿½pï¿½Ïï¿½
+    private Vector2 movement;
+    // ï¿½}ï¿½bï¿½vï¿½Ú“ï¿½ï¿½ï¿½ï¿½Ìƒtï¿½ï¿½ï¿½O
+    private bool canMove = true;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -43,4 +46,14 @@ public class Player : MonoBehaviour
             Instance = null;
         }
     }
+
+    public void EnableMovement(bool enable)
+    {
+        canMove = enable;
+        if (!enable)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+    }
+
 }
