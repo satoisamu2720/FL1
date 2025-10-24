@@ -23,7 +23,7 @@ public class Chest : MonoBehaviour
 
         isOpened = true;
         Debug.Log("宝箱が開きました！ アイテムID: " + itemIDToGive);
-        //playerInventory.AddItem(itemIDToGive); // プレイヤーのインベントリにアイテムを追加する処理をここに書く
+        playerInventory.AddItem(itemIDToGive); // プレイヤーのインベントリにアイテムを追加する処理をここに書く
 
     }
 }
