@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c466cf6fbcefb90479144369a597c390, type: 3}
   m_Name: BombData
   m_EditorClassIdentifier: 
-  itemID: 1
+  itemID: 2
   itemName: Bomb
   icon: {fileID: -1483665779731714255, guid: 5fc6b025b52208f4fa6e6f0ccf897493, type: 3}
   description: "\u7206\u5F3E"

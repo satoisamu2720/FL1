@@ -37,9 +37,9 @@ public class Player : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         { // Œ•‚ğ‚Á‚Ä‚¢‚È‚¯‚ê‚ÎUŒ‚‚Å‚«‚È‚¢
-            if (Inventory.Instance.HasItem(2))
+            if (Inventory.Instance.GetEquippedItem()?.itemID == 0)
             {
-                HandleAttackInput(); 
+                HandleAttackInput();
             }
         }
     }
@@ -105,6 +105,7 @@ public class Player : MonoBehaviour
                 StartCoroutine(SpinAttack());
             }
         }
+
     }
 
 

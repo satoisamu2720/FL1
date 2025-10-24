@@ -17,16 +17,31 @@ public class PlayerItemUse : MonoBehaviour
 
     void Start()
     {
-        Inventory.Instance.AddItem(0); // 弓
-        Inventory.Instance.AddItem(1); // 爆弾
-        Inventory.Instance.AddItem(2); // 剣
+        Inventory.Instance.AddItem(0); // 剣
 
         var item = Inventory.Instance.GetSelectedItem();
-        Debug.Log($"選択中アイテム: {item.itemName}");
+        if (item != null)
+        {
+            Debug.Log($"選択中アイテム: {item.itemName}");
+        }
+        else
+        {
+            Debug.Log("選択中のアイテムがありません");
+        }
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            Inventory.Instance.AddItem(1); // 弓
+            //Inventory.Instance.AddItem(1); // 爆弾
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            //Inventory.Instance.AddItem(0); // 弓
+            Inventory.Instance.AddItem(2); // 爆弾
+        }
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {
             // 向き更新
@@ -89,10 +104,10 @@ public class PlayerItemUse : MonoBehaviour
 
         switch (item.itemID)
         {
-            case 0:
+            case 1:
                 ShootArrow(item);
                 break;
-            case 1:
+            case 2:
                 if (item.itemPrefab != null)
                     Instantiate(item.itemPrefab, transform.position, Quaternion.identity);
                 break;

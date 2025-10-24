@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c466cf6fbcefb90479144369a597c390, type: 3}
   m_Name: SwordData
   m_EditorClassIdentifier: 
-  itemID: 2
+  itemID: 0
   itemName: Sword
   icon: {fileID: 0}
   description: "\u5263"
   usable: 0
   itemType: 1
   itemPrefab: {fileID: 0}
+  mpCost: 0

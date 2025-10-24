@@ -82,11 +82,11 @@ public class ItemSelector : MonoBehaviour
         else
         {
             // usable=true でも、ここでは「装備」として扱う
-            Inventory.Instance.EquipItem(item.itemID);
+            Inventory.Instance.EquipWithoutAdding(item.itemID);
             Debug.Log($"{item.itemName} を装備しました（使用はゲーム中で）");
         }
 
-        // ポーズ解除は外側（PauseMenuなど）で制御
+        
     }
 
     ItemData GetItemBySlot(int index)
@@ -94,19 +94,5 @@ public class ItemSelector : MonoBehaviour
         var ownedIDs = Inventory.Instance.GetOwnedIDs();
         if (index < 0 || index >= ownedIDs.Count) return null;
         return Inventory.Instance.itemDatabase.GetItemByID(ownedIDs[index]);
-    }
-
-    void UseItem(ItemData item)
-    {
-        switch (item.itemID)
-        {
-            case 0: // 弓
-                Debug.Log("弓を使用 → 矢を放つ");
-                break;
-            case 1: // 爆弾
-                Instantiate(item.itemPrefab, Player.Instance.transform.position, Quaternion.identity);
-                Debug.Log("爆弾を投げた！");
-                break;
-        }
     }
 }
