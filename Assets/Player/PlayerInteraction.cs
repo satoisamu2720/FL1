@@ -1,15 +1,16 @@
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class PlayerInteraction : MonoBehaviour
 {
     public float interactionRange = 2f; //宝箱との距離
-    private PlayerInventory inventory; //プレイヤーのインベントリ参照
+    private Inventory inventory; //プレイヤーのインベントリ参照
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        inventory = GetComponent<PlayerInventory>();
+        inventory = GetComponent<Inventory>();
     }
 
     // Update is called once per frame
@@ -18,6 +19,7 @@ public class PlayerInteraction : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.E))
         {
             TryOpenChest();
+            Debug.Log("開けた");
         }
     }
 

@@ -17,13 +17,13 @@ public class Chest : MonoBehaviour
     }
 
     // Update is called once per frame
-    public void OpenChest(PlayerInventory playerInventory)
+    public void OpenChest(Inventory inventory)
     {
         if(isOpened) return;
 
         isOpened = true;
         Debug.Log("宝箱が開きました！ アイテムID: " + itemIDToGive);
-        playerInventory.AddItem(itemIDToGive); // プレイヤーのインベントリにアイテムを追加する処理をここに書く
+        inventory.AddItem(itemIDToGive); // プレイヤーのインベントリにアイテムを追加する処理をここに書く
 
     }
 }
