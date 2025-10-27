@@ -8,7 +8,7 @@ public class RoomTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Camera.main.GetComponent<RoomCamera>().MoveToRoom(cameraNewPosition);
+            //Camera.main.GetComponent<RoomCamera>().MoveToRoom(cameraNewPosition);
         }
     }
 }
