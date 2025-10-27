@@ -3,8 +3,8 @@ using static UnityEditor.Progress;
 
 public class PlayerInteraction : MonoBehaviour
 {
-    public float interactionRange = 2f; //宝箱との距離
     private Inventory inventory; //プレイヤーのインベントリ参照
+    private Chest chest; //宝箱のアセット
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -16,24 +16,29 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.E))
+        // 宝箱と接触中で、Eキーが押されたら開く
+        if (chest != null && Input.GetKeyDown(KeyCode.E))
         {
-            TryOpenChest();
-            Debug.Log("開けた");
+            Debug.Log("宝箱を開けた！");
+            chest.OpenChest(inventory);
         }
     }
 
-    private void TryOpenChest()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        Ray ray = new Ray(transform.position + Vector3.up * 0.5f, transform.forward);
-
-        if(Physics.Raycast(ray, out RaycastHit hit, interactionRange))
+        if (other.CompareTag("Chest"))
         {
-            Chest chest = hit.collider.GetComponent<Chest>();
-            if (chest != null)
-            {
-                chest.OpenChest(inventory);
-            }
+            chest = other.GetComponent<Chest>();
+            Debug.Log("宝箱の前に立った");
+        }
+    }
+    // 宝箱から離れたとき
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Chest"))
+        {
+            if (chest == other.GetComponent<Chest>())
+                chest = null;
         }
     }
 }
