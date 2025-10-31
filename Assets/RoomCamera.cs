@@ -9,7 +9,8 @@ public class RoomCamera : MonoBehaviour
 
     private void Start()
     {
-        targetPos = transform.position;
+        if (player != null)
+            targetPosition = new Vector3(player.position.x, player.position.y, -10f);
     }
 
     private void Update()
