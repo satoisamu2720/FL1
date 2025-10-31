@@ -26,7 +26,7 @@ public class MapTransitionTrigger : MonoBehaviour
         if (move != null) move.enabled = false;
 
         // カメラを移動
-        Camera.main.GetComponent<RoomCamera>().MoveTo(cameraTargetPosition);
+        Camera.main.GetComponent<CameraController>().MoveTo(cameraTargetPosition);
 
         // 少し待ってからプレイヤー移動
         yield return new WaitForSeconds(transitionDelay);
