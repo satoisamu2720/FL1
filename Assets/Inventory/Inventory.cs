@@ -54,9 +54,11 @@ public class Inventory : MonoBehaviour
         if (item == null) return;
 
         equippedItem = item;
+        equippedItemID = itemID;
 
         if (item.itemID == 0)
             hasSword = true; // Œ•‚ð“o˜^Ï‚Ý‚É‚·‚é
+        Debug.Log($"{item.itemName}iID:{itemID}j‚ð‘•”õ‚µ‚Ü‚µ‚½B");
     }
 
     public bool HasSword()
@@ -79,6 +81,10 @@ public class Inventory : MonoBehaviour
 
     public ItemData GetEquippedItem()
     {
+        if (equippedItem == null && equippedItemID >= 0)
+        {
+            equippedItem = itemDatabase.GetItemByID(equippedItemID);
+        }
         return equippedItem;
     }
 

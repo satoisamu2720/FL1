@@ -45,6 +45,17 @@ public class Player : MonoBehaviour
                 HandleAttackInput();
             }
         }
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Status.Instance.TakeDamage(1);
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Status.Instance.RecoverHP(1);
+        }
+
+#endif
     }
 
     void FixedUpdate()
@@ -80,12 +91,7 @@ public class Player : MonoBehaviour
     {
         rb.MovePosition(rb.position + movement * speed * Time.deltaTime);
     }
-    public void Recover(float amount)
-    {
-        Status.Instance.PlayerHP = Mathf.Min(Status.Instance.PlayerHP + amount, Status.Instance.MaxHP);
-        Debug.Log($"回復！ 現在HP: {Status.Instance.PlayerHP}/{Status.Instance.MaxHP}");
-    }
-
+   
 
     private void HandleAttackInput()
     {
@@ -207,15 +213,6 @@ public class Player : MonoBehaviour
         attackState = AttackState.None;
     }
 
-    public void TakeDamage(float amount)
-    {
-        Status.Instance.PlayerHP -= amount;
-        if (Status.Instance.PlayerHP <= 0)
-        {
-            Status.Instance.PlayerHP = 0;
-            Debug.Log("プレイヤーはやられた！");
-        }
-    }
     void Awake()
     {
         Instance = this;

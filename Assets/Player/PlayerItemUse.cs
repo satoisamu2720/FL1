@@ -32,6 +32,7 @@ public class PlayerItemUse : MonoBehaviour
 
     void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.H))
         {
             Inventory.Instance.AddItem(1); // 弓
@@ -46,6 +47,7 @@ public class PlayerItemUse : MonoBehaviour
         { 
             Inventory.Instance.AddItem(0); // 剣
         }
+#endif
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {
             // 向き更新
@@ -110,13 +112,15 @@ public class PlayerItemUse : MonoBehaviour
         {
             case 1:
                 ShootArrow(item);
+                Debug.Log($"{item.itemName},ID:{item.itemID},MP:{item.mpCost} を使用した！");
                 break;
             case 2:
                 if (item.itemPrefab != null)
                     Instantiate(item.itemPrefab, transform.position, Quaternion.identity);
+                Debug.Log($"{item.itemName},ID:{item.itemID},MP:{item.mpCost} を使用した！");
                 break;
             default:
-                Debug.Log($"{item.itemName} を使用した！");
+                Debug.Log($"{item.itemName}[{item.itemID}] を使用した！");
                 break;
         }
         return true;
