@@ -221,8 +221,6 @@ public class Player : MonoBehaviour
     void OnDestroy()
     {
         if (Instance == this)
-        {
             Instance = null;
-        }
     }
 }
