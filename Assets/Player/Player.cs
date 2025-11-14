@@ -36,12 +36,26 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
-        { // Œ•‚ğ‚Á‚Ä‚¢‚È‚¯‚ê‚ÎUŒ‚‚Å‚«‚È‚¢
-            if (Inventory.Instance.HasItem(2))
+        {
+            var equipped = Inventory.Instance.GetEquippedItem();
+
+            // Œ•‚ğ‘•”õÏ‚İ‚È‚çí‚Ég‚¦‚é
+            if (Inventory.Instance.HasSword())
             {
-                HandleAttackInput(); 
+                HandleAttackInput();
             }
         }
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Status.Instance.TakeDamage(1);
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Status.Instance.RecoverHP(1);
+        }
+
+#endif
     }
 
     void FixedUpdate()
@@ -77,6 +91,7 @@ public class Player : MonoBehaviour
     {
         rb.MovePosition(rb.position + movement * speed * Time.deltaTime);
     }
+   
 
     private void HandleAttackInput()
     {
@@ -105,6 +120,7 @@ public class Player : MonoBehaviour
                 StartCoroutine(SpinAttack());
             }
         }
+
     }
 
 

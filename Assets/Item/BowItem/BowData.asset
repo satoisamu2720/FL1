@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c466cf6fbcefb90479144369a597c390, type: 3}
   m_Name: BowData
   m_EditorClassIdentifier: 
-  itemID: 0
+  itemID: 1
   itemName: Bow
   icon: {fileID: -7856493677412862020, guid: dfb4522b035885446a9ef8581c81f916, type: 3}
   description: "\u5F13\u77E2"
