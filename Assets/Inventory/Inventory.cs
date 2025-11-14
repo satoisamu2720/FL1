@@ -15,6 +15,8 @@ public class Inventory : MonoBehaviour
 
     private int equippedItemID = -1;
 
+    private bool hasSword = false;
+
     public void AddItem(int id)
     {
         var item = itemDatabase.GetItemByID(id);
@@ -48,9 +50,20 @@ public class Inventory : MonoBehaviour
 
     public void EquipItem(int itemID)
     {
-        equippedItem = itemDatabase.GetItemByID(itemID);
+        var item = itemDatabase.GetItemByID(itemID);
+        if (item == null) return;
+
+        equippedItem = item;
         equippedItemID = itemID;
-        Debug.Log($"{equippedItem.itemName} ‚ð‘•”õ‚µ‚Ü‚µ‚½");
+
+        if (item.itemID == 0)
+            hasSword = true; // Œ•‚ð“o˜^Ï‚Ý‚É‚·‚é
+        Debug.Log($"{item.itemName}iID:{itemID}j‚ð‘•”õ‚µ‚Ü‚µ‚½B");
+    }
+
+    public bool HasSword()
+    {
+        return hasSword;
     }
     public void EquipWithoutAdding(int itemID)
     {
@@ -68,6 +81,10 @@ public class Inventory : MonoBehaviour
 
     public ItemData GetEquippedItem()
     {
+        if (equippedItem == null && equippedItemID >= 0)
+        {
+            equippedItem = itemDatabase.GetItemByID(equippedItemID);
+        }
         return equippedItem;
     }
 
@@ -78,6 +95,8 @@ public class Inventory : MonoBehaviour
     }
 
     public List<int> GetOwnedIDs() => ownedItemIDs;
+
+
     void Awake()
     {
         Instance = this;

@@ -73,7 +73,6 @@ public class ItemSelector : MonoBehaviour
             return;
         }
 
-        // 装備可能なら装備だけ行う
         if (!item.usable)
         {
             Inventory.Instance.EquipItem(item.itemID);
@@ -81,12 +80,10 @@ public class ItemSelector : MonoBehaviour
         }
         else
         {
-            // usable=true でも、ここでは「装備」として扱う
             Inventory.Instance.EquipWithoutAdding(item.itemID);
-            Debug.Log($"{item.itemName} を装備しました（使用はゲーム中で）");
+            Debug.Log($"{item.itemName} を装備しました");
         }
 
-        
     }
 
     ItemData GetItemBySlot(int index)
