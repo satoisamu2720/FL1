@@ -1,9 +1,12 @@
 using UnityEngine;
 
+
+
 public class Arrow : MonoBehaviour
 {
     public float lifeTime = 3f;
     public int damage = 1;
+
 
     void Start()
     {
@@ -16,6 +19,10 @@ public class Arrow : MonoBehaviour
         {
             Debug.Log("ìGÇ…ñΩíÜÅI");
             Destroy(gameObject);
+            if (DivisionEnemy.Instance != null)
+            {
+                DivisionEnemy.Instance.Die();
+            }
         }
     }
 }
