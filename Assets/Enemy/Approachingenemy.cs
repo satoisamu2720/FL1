@@ -4,15 +4,15 @@ using UnityEngine.UI;
 public class Approachingenemy : MonoBehaviour
 {
     [Header("行動パラメータ")]
-    public float speed = 3f;             // 移動速度
-    public float rushDistance = 1.5f;    // 突進距離
-    public float waitTime = 1.5f;        // 次の突進までの待ち時間
-    public bool startImmediate = false;  // すぐ突進するか
+    public float speed = 3f;
+    public float rushDistance = 1.5f;
+    public float waitTime = 1.5f;
+    public bool startImmediate = false;
 
     [Header("敵ステータス")]
-    public int maxHP = 2;                // 最大HP
-    public GameObject itemPrefab;        // ドロップアイテム
-    public GameObject arrowUIPrefab;     // 画面外表示用UI
+    public int maxHP = 2;
+    public GameObject itemPrefab;
+    public GameObject arrowUIPrefab;
 
     [Header("無敵設定")]
     [SerializeField] private float invincibilityDuration = 2f;
@@ -74,6 +74,10 @@ public class Approachingenemy : MonoBehaviour
 
     void Update()
     {
+        // ★死亡後は一切処理しない
+        if (isDead) return;
+        if (this == null) return; // 念のため安全策
+
         if (player == null)
         {
             player = GameObject.FindWithTag("Player")?.transform;
@@ -88,12 +92,15 @@ public class Approachingenemy : MonoBehaviour
 
     void HandleStateMachine()
     {
+        if (isDead) return;
+
         switch (state)
         {
             case State.Idle:
                 waitTimer -= Time.deltaTime;
                 if (waitTimer <= 0f)
                 {
+                    if (player == null) return;
                     moveDirection = (player.position - transform.position).normalized;
                     startPosition = transform.position;
                     state = State.Rushing;
@@ -118,7 +125,8 @@ public class Approachingenemy : MonoBehaviour
 
     void HandleArrow()
     {
-        if (arrowInstance == null || mainCamera == null) return;
+        if (arrowInstance == null || mainCamera == null || isDead) return;
+        if (this == null) return;
 
         Vector3 viewportPos = mainCamera.WorldToViewportPoint(transform.position);
         bool isOffScreen =
@@ -146,7 +154,7 @@ public class Approachingenemy : MonoBehaviour
 
     void UpdateAnimation()
     {
-        if (animator == null) return;
+        if (animator == null || isDead) return;
 
         if (state == State.Rushing)
         {
@@ -195,11 +203,18 @@ public class Approachingenemy : MonoBehaviour
             Instantiate(itemPrefab, transform.position, Quaternion.identity);
         }
 
+        // ★Arrow破棄
         if (arrowInstance != null)
         {
             Destroy(arrowInstance.gameObject);
+            arrowInstance = null;
         }
 
+        // ★コルーチンやInvokeを停止（安全策）
+        StopAllCoroutines();
+        CancelInvoke();
+
+        // ★フレーム末で破棄
         Destroy(gameObject);
     }
 
@@ -211,7 +226,7 @@ public class Approachingenemy : MonoBehaviour
 
     private void HandleInvincibility()
     {
-        if (!isInvincible) return;
+        if (!isInvincible || isDead) return;
 
         invincibilityTimer -= Time.deltaTime;
         float alpha = Mathf.PingPong(Time.time * 10f, 1f);
@@ -226,6 +241,8 @@ public class Approachingenemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (isDead) return;
+
         if (state == State.Rushing && collision.collider.CompareTag("Wall"))
         {
             state = State.Idle;
@@ -235,10 +252,22 @@ public class Approachingenemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isDead) return;
+
         if (collision.CompareTag("SwordHitbox"))
         {
             TakeDamage(1);
             Destroy(collision.gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // ★念のためArrow削除（破棄タイミングのズレ対策）
+        if (arrowInstance != null)
+        {
+            Destroy(arrowInstance.gameObject);
+            arrowInstance = null;
         }
     }
 }

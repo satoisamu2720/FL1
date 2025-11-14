@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class DivisionEnemy : MonoBehaviour
 {
+    public static DivisionEnemy Instance { get; private set; }
+
     [Header("Movement Settings")]
     public float speed = 5f;
     public float rushDistance = 5f;
@@ -188,7 +190,7 @@ public class DivisionEnemy : MonoBehaviour
         }
     }
 
-    void Die()
+    public void Die()
     {
         if (isDead) return;
         isDead = true;
@@ -237,5 +239,16 @@ public class DivisionEnemy : MonoBehaviour
                 miniRB.AddForce(direction * 3f, ForceMode2D.Impulse);
             }
         }
+    }
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }
