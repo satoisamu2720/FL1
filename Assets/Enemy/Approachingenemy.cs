@@ -11,6 +11,7 @@ public class Approachingenemy : MonoBehaviour
 
     [Header("敵ステータス")]
     public int maxHP = 2;
+    public int expAmount = 100;
     public GameObject itemPrefab;
     public GameObject arrowUIPrefab;
 
@@ -270,4 +271,5 @@ public class Approachingenemy : MonoBehaviour
             arrowInstance = null;
         }
     }
-}
+
+   
