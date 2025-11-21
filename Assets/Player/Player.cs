@@ -22,6 +22,26 @@ public class Player : MonoBehaviour
     [Header("’·‰Ÿ‚µ”»’è")]
     public float holdThreshold = 0.3f;    // ’·‰Ÿ‚µ‚Æ”»’è‚·‚é‚Ü‚Å‚ÌŠÔ
 
+    [Header("~‚Ü‚Á‚Ä‚¢‚é‚Ì‰æ‘œ")]
+    public Sprite upIdle;
+    public Sprite downIdle;
+    public Sprite leftIdle;
+    public Sprite rightIdle;
+
+    [Header("•à‚¢‚Ä‚¢‚é‚Ì‰æ‘œ")]
+    public Sprite upWalk1;
+    public Sprite upWalk2;
+    public Sprite downWalk1;
+    public Sprite downWalk2;
+    public Sprite leftWalk1;
+    public Sprite leftWalk2;
+    public Sprite rightWalk1;
+    public Sprite rightWalk2;
+
+    private SpriteRenderer sr;
+    private float walkAnimTimer = 0f;
+    public float walkAnimSpeed = 0.15f; // •à‚«ƒAƒjƒ‚Ì‘¬“x
+
     private enum AttackState { None, Swing, Charge, Spin }
     private AttackState attackState = AttackState.None;
 
@@ -30,7 +50,11 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        if (swordHitbox != null) swordHitbox.SetActive(false);
+        sr = GetComponent<SpriteRenderer>();
+        if (swordHitbox != null)
+        {
+            swordHitbox.SetActive(false);
+        }
     }
 
     void Update()
@@ -54,7 +78,7 @@ public class Player : MonoBehaviour
         {
             Status.Instance.RecoverHP(1);
         }
-
+        UpdateAnimation();
 #endif
     }
 
@@ -212,6 +236,55 @@ public class Player : MonoBehaviour
         swordHitbox.SetActive(false);
         attackState = AttackState.None;
     }
+
+    private void UpdateAnimation()
+    {
+        Vector2 dir = (movement != Vector2.zero) ? movement : lastMoveDir;
+
+        //Œü‚«”»’è
+        bool horizontal = Mathf.Abs(dir.x) > Mathf.Abs(dir.y);
+
+        string state = movement == Vector2.zero ? "idle" : "walk";
+
+        Sprite s = null;
+
+        // ---- Idle ----
+        if (state == "idle")
+        {
+            if (horizontal)
+            {
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            }
+            else
+            {
+                s = (dir.y > 0) ? upIdle : downIdle;
+            }
+            sr.sprite = s;
+            return;
+        }
+
+        // ---- Walk Animation ----
+        walkAnimTimer += Time.deltaTime;
+        bool frame = (walkAnimTimer % (walkAnimSpeed * 2)) < walkAnimSpeed;
+
+        if (horizontal)
+        {
+            if (dir.x > 0)
+                s = frame ? rightWalk1 : rightWalk2;
+            else
+                s = frame ? leftWalk1 : leftWalk2;
+        }
+        else
+        {
+            if (dir.y > 0)
+                s = frame ? upWalk1 : upWalk2;
+            else
+                s = frame ? downWalk1 : downWalk2;
+        }
+
+        sr.sprite = s;
+    }
+
 
     void Awake()
     {

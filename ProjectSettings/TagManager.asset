@@ -9,6 +9,14 @@ TagManager:
   - SwordHitbox
   - MagicBullet
   - EnemyBullet
+  - Chest
+  - Sword
+  - PlayerBullet
+  - Arrow
+  - Bomb
+  - Door
+  - Wall
+  - Switch
   layers:
   - Default
   - TransparentFX
