@@ -241,49 +241,62 @@ public class Player : MonoBehaviour
     {
         Vector2 dir = (movement != Vector2.zero) ? movement : lastMoveDir;
 
-        //Œü‚«”»’è
         bool horizontal = Mathf.Abs(dir.x) > Mathf.Abs(dir.y);
-
-        string state = movement == Vector2.zero ? "idle" : "walk";
+        bool isMoving = movement != Vector2.zero;
 
         Sprite s = null;
 
-        // ---- Idle ----
-        if (state == "idle")
+        if (!isMoving)
         {
             if (horizontal)
-            {
                 s = (dir.x > 0) ? rightIdle : leftIdle;
-            }
             else
-            {
                 s = (dir.y > 0) ? upIdle : downIdle;
-            }
+
             sr.sprite = s;
             return;
         }
 
-        // ---- Walk Animation ----
         walkAnimTimer += Time.deltaTime;
-        bool frame = (walkAnimTimer % (walkAnimSpeed * 2)) < walkAnimSpeed;
 
         if (horizontal)
         {
-            if (dir.x > 0)
-                s = frame ? rightWalk1 : rightWalk2;
+            float t = walkAnimTimer % (walkAnimSpeed * 4f);
+
+            if (t < walkAnimSpeed)
+            {
+               
+                s = (dir.x > 0) ? rightWalk1 : leftWalk1;
+            }
+            else if (t < walkAnimSpeed * 2f)
+            {
+               
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            }
+            else if (t < walkAnimSpeed * 3f)
+            {
+                
+                s = (dir.x > 0) ? rightWalk2 : leftWalk2;
+            }
             else
-                s = frame ? leftWalk1 : leftWalk2;
+            {
+                
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            }
+
+            sr.sprite = s;
+            return;
         }
+        bool frame = (walkAnimTimer % (walkAnimSpeed * 2)) < walkAnimSpeed;
+
+        if (dir.y > 0)
+            s = frame ? upWalk1 : upWalk2;
         else
-        {
-            if (dir.y > 0)
-                s = frame ? upWalk1 : upWalk2;
-            else
-                s = frame ? downWalk1 : downWalk2;
-        }
+            s = frame ? downWalk1 : downWalk2;
 
         sr.sprite = s;
     }
+
 
 
     void Awake()

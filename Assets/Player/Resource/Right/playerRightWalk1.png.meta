@@ -103,10 +103,10 @@ TextureImporter:
       name: playerRightWalk1_0
       rect:
         serializedVersion: 2
-        x: 39
-        y: 24
-        width: 82
-        height: 112
+        x: 43
+        y: 19
+        width: 54
+        height: 86
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
