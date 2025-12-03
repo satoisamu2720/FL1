@@ -373,6 +373,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2659662977615256476, guid: 56cdaa5763564f84a924b35912659f98, type: 3}
     - target: {fileID: 3002408912353333132, guid: ba1a9b5b0112b7c4d8e4f0e5c9f64b28, type: 3}
+      propertyPath: sortingOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3002408912353333132, guid: ba1a9b5b0112b7c4d8e4f0e5c9f64b28, type: 3}
       propertyPath: heartDropChance
       value: 1
       objectReference: {fileID: 0}
