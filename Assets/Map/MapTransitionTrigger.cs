@@ -6,13 +6,25 @@ public class MapTransitionTrigger : MonoBehaviour
     public Vector3 playerTargetPosition;  // プレイヤーの新しい位置
     public float transitionDelay = 0.5f;  // スクロール演出の間
 
+    public int doorID;               // ← この扉の識別番号
+    public int nextMapID;            // 移動先マップID
+    public Vector3 nextPlayerPos;    // ワープ後の位置
+    public Vector3 nextCameraPos;
+
+
     private bool isTransitioning = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isTransitioning) return;
+        if (isTransitioning)
+        {
+            return;
+        }
+
         if (other.CompareTag("Player"))
         {
+            MapManager.Instance.MapTransition(doorID, nextMapID);
+
             StartCoroutine(Transition(other.transform));
         }
     }
