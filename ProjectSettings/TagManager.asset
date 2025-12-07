@@ -9,6 +9,12 @@ TagManager:
   - SwordHitbox
   - MagicBullet
   - EnemyBullet
+  - Chest
+  - Sword
+  - PlayerBullet
+  - Wall
+  - Block
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -18,8 +24,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Block
+  - Ground
   - 
   - 
   - 
