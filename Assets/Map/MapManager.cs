@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MapManager : MonoBehaviour
@@ -6,13 +7,22 @@ public class MapManager : MonoBehaviour
 
     public int currentMapID = 0;
 
-    bool isOpenDoor = false;
 
-    int OpenDoorNum = 0;
+    public bool[] isGimickClearMap = new bool[6];
+
+    public bool isOpenDoor = false;
+
+    public int OpenDoorNum = 0;
 
     private void Awake()
     {
         Instance = this;
+
+    }
+
+    private void Update()
+    {
+        ApplyGimmicks(currentMapID, 1);
     }
 
     public void MapTransition(int doorID, int toMapID)
@@ -32,34 +42,94 @@ public class MapManager : MonoBehaviour
 
     private void ApplyGimmicks(int mapID, int doorID)
     {
-        // ここでマップ + 扉 に応じてギミック変化
-        // 例：仕掛けの ON/OFF、敵の配置、スイッチの状態など
+
+        if (mapID == 0)
+        {
+            isGimickClearMap[0] = true;
+
+            if (isGimickClearMap[0] == true)
+            {
+                isOpenDoor = true;
+            }
+            else
+            {
+                isOpenDoor = false;
+            }
+
+        }
 
         if (mapID == 1)
         {
-            //if (doorID == 1)
-            //{
-            //    Debug.Log("マップ1の扉1から来た → ギミックAをON");
-            //    // ギミックA.On();
-            //}
-            //else if (doorID == 2)
-            //{
-            //    Debug.Log("マップ1の扉2から来た → ギミックBをON");
-            //    // ギミックB.On();
-            //}
+            if (OpenDoorNum == 1)
+            {
+                isGimickClearMap[1] = true;
+            }
 
-            if(OpenDoorNum  == 3)
+            if (isGimickClearMap[1] == true)
             {
                 isOpenDoor = true;
+            }
+            else
+            {
+                isOpenDoor = false;
             }
 
 
         }
+
+        if (mapID == 2)
+        {
+            if (isGimickClearMap[2] == true)
+            {
+                isOpenDoor = true;
+            }
+            else
+            {
+                isOpenDoor = false;
+            }
+        }
+
+        if (mapID == 3)
+        {
+            if (isGimickClearMap[3] == true)
+            {
+                isOpenDoor = true;
+            }
+            else
+            {
+                isOpenDoor = false;
+            }
+        }
+
+        if (mapID == 4)
+        {
+            if (isGimickClearMap[4] == true)
+            {
+                isOpenDoor = true;
+            }
+            else
+            {
+                isOpenDoor = false;
+            }
+        }
+
+        if (mapID == 5)
+        {
+            if (isGimickClearMap[5] == true)
+            {
+                isOpenDoor = true;
+            }
+            else
+            {
+                isOpenDoor = false;
+            }
+        }
+
     }
 
-    void Reset()
+    public void Reset()
     {
-        isOpenDoor = false;
+        //isOpenDoor = false;
         OpenDoorNum = 0;
     }
 

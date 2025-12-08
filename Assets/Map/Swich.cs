@@ -15,21 +15,17 @@ public class Swich : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MapGimmick mapGimmick = GetComponent<MapGimmick>();
-
-
-        if (isStepOn == true)
-        {
-            mapGimmick.openNum++;
-        }
+       
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.CompareTag("Player") && isStepOn == false)
         {
             isStepOn = true;
+            MapManager.Instance.OpenDoorNum ++;
         }
     }
+
 
 }
