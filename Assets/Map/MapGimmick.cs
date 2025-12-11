@@ -15,10 +15,7 @@ public class MapGimmick : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(openNum == 4)
-        {
-
-        }
+       
     }
 
     void Swich()
