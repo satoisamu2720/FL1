@@ -2,58 +2,47 @@ using UnityEngine;
 
 public class Bullets : MonoBehaviour
 {
-    public float speed = 6f;
-    public int damage = 1;
-    public Vector2 direction;
-
-    private Rigidbody2D rb;
-
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0;
-            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        }
-
-        if (GetComponent<Collider2D>() == null)
-        {
-            CircleCollider2D col = gameObject.AddComponent<CircleCollider2D>();
-            col.isTrigger = true;
-        }
-    }
+    public float speed = 8f;
+    private Vector2 moveDir;
 
     public void SetDirection(Vector2 dir)
     {
-        direction = dir.normalized;
+        moveDir = dir.normalized;
     }
 
     void Update()
     {
-        rb.MovePosition(rb.position + direction * speed * Time.deltaTime);
+        transform.position += (Vector3)moveDir * speed * Time.deltaTime;
+    }
+    public interface IPlayerDamageable
+    {
+        void TakeDamage(int damage);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ★ プレイヤーに当たったらダメージ
-        if (other.CompareTag("Player"))
-        {
-            Player p = other.GetComponent<Player>();
-            if (p != null)
-            {
-                p.TakeDamage(damage);
-            }
+        IPlayerDamageable player = other.GetComponent<IPlayerDamageable>();
 
+        if (player != null)
+        {
+            player.TakeDamage(1);
+            Destroy(gameObject);
+        }
+        else if (other.CompareTag("Wall"))
+        {
             Destroy(gameObject);
         }
 
-        // ★ 壁に当たったら消滅（任意）
-        if (other.CompareTag("Wall"))
+
+        if (other.CompareTag("Player"))
         {
+            if (player != null)
+            {
+                player.TakeDamage(1);
+            }
+
             Destroy(gameObject);
+            return;
         }
     }
 }

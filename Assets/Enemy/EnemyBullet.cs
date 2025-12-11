@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class BulletEnemy : MonoBehaviour, ISwordDamageable
 {
-    public static BulletEnemy Instance { get; private set; }
-
     [Header("Movement Settings")]
     public float speed = 2f;
     public float minDistanceFromPlayer = 3f;
@@ -21,21 +19,15 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
     public GameObject itemPrefab;
 
     [Header("Invincibility Settings")]
-    public float invincibilityDuration = 2f;
+    public float invincibilityDuration = 0.5f;
     private bool isInvincible = false;
     private float invincibilityTimer = 0f;
 
     private Transform player;
     private SpriteRenderer spriteRenderer;
     private Color originColor;
-    private Animator animator;
 
     private bool isDead = false;
-
-    void Awake()
-    {
-        Instance = this;
-    }
 
     void Start()
     {
@@ -45,19 +37,13 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         originColor = spriteRenderer.color;
-
-        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
         if (isDead) return;
 
-        if (player == null)
-        {
-            player = GameObject.FindWithTag("Player")?.transform;
-            if (player == null) return;
-        }
+        if (player == null) return;
 
         shootTimer -= Time.deltaTime;
         if (shootTimer <= 0f)
@@ -67,34 +53,19 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         }
 
         MoveAwayFromPlayer();
-        UpdateAnimation();
         HandleInvincibility();
     }
 
     void Shoot()
     {
-        if (bulletPrefab != null && player != null)
-        {
-            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        if (bulletPrefab == null) return;
 
-            Vector2 direction = (player.position - transform.position).normalized;
+        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 
-            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            if (rb == null)
-            {
-                rb = bullet.AddComponent<Rigidbody2D>();
-                rb.bodyType = RigidbodyType2D.Kinematic;
-                rb.gravityScale = 0;
-                rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            }
+        Vector2 direction = (player.position - transform.position).normalized;
 
-            rb.linearVelocity = direction * 12f;
-
-            Destroy(bullet, 5f);
-        }
+        bullet.GetComponent<Bullets>().SetDirection(direction);
     }
-
-
 
     void MoveAwayFromPlayer()
     {
@@ -103,21 +74,6 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         {
             Vector2 direction = (transform.position - player.position).normalized;
             transform.position += (Vector3)direction * speed * Time.deltaTime;
-        }
-    }
-
-    void UpdateAnimation()
-    {
-        if (animator == null) return;
-
-        float x = player.position.x - transform.position.x;
-        if (x > 0.1f)
-        {
-            animator.Play("zombie_Right");
-        }
-        else if (x < -0.1f)
-        {
-            animator.Play("zombie_Left");
         }
     }
 
@@ -142,7 +98,7 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         if (!isInvincible) return;
 
         invincibilityTimer -= Time.deltaTime;
-        float alpha = Mathf.PingPong(Time.time * 10f, 1f);
+        float alpha = Mathf.PingPong(Time.time * 25f, 1f);
         spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
 
         if (invincibilityTimer <= 0f)
@@ -152,23 +108,40 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         }
     }
 
-    public void Die()
+    void Die()
     {
-        if (isDead) return;
         isDead = true;
 
         if (itemPrefab != null)
             Instantiate(itemPrefab, transform.position, Quaternion.identity);
-
         MapManager.Instance.OpenDoorNum++;
-
         Destroy(gameObject);
     }
 
-    void OnDestroy()
-    {
-        if (Instance == this)
-            Instance = null;
-    }
 
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // ▼ 剣に当たったらダメージ
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(1);
+        }
+
+        // �� �v���C���[�ɓ���������_���[�W�i���̏����j
+        if (other.CompareTag("Player"))
+        {
+            Player p = other.GetComponent<Player>();
+            if (p != null)
+                p.TakeDamage(1);
+        }
+
+        Player player = other.GetComponent<Player>();
+        if (player != null)
+        {
+            player.TakeDamage(1);
+            Destroy(gameObject);
+            return;
+        }
+    }
 }

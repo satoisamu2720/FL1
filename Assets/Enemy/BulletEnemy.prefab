@@ -147,7 +147,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -177,7 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   minDistanceFromPlayer: 3
-  maxHP: 3
+  maxHP: 2
   bulletPrefab: {fileID: 8754621766251140444, guid: f81decd79bcd4394eaaf575482a93897, type: 3}
   shootInterval: 2
   itemPrefab: {fileID: 0}

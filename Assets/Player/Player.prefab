@@ -214,7 +214,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 8
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -239,8 +239,27 @@ MonoBehaviour:
   rb: {fileID: 8533057402363587181}
   swordHitbox: {fileID: 1559859303570916718}
   attackDuration: 0.2
-  swingAngle: 75
   hitboxDistance: 1
+  swingArc: 75
+  spinDuration: 0.6
+  spinSpeed: 720
+  holdThreshold: 0.3
+  upIdle: {fileID: 0}
+  downIdle: {fileID: 0}
+  leftIdle: {fileID: 0}
+  rightIdle: {fileID: 0}
+  upWalk1: {fileID: 0}
+  upWalk2: {fileID: 0}
+  downWalk1: {fileID: 0}
+  downWalk2: {fileID: 0}
+  leftWalk1: {fileID: 0}
+  leftWalk2: {fileID: 0}
+  rightWalk1: {fileID: 0}
+  rightWalk2: {fileID: 0}
+  walkAnimSpeed: 0.15
+  maxHP: 5
+  currentHP: 0
+  invincibleTime: 0.5
 --- !u!50 &8533057402363587181
 Rigidbody2D:
   serializedVersion: 5

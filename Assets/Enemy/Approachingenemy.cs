@@ -15,7 +15,7 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
     public GameObject arrowUIPrefab;
 
     [Header("無敵設定")]
-    [SerializeField] private float invincibilityDuration = 2f;
+    [SerializeField] private float invincibilityDuration = 0.4f; // 点滅時間短め推奨
 
     private int currentHP;
     private Transform player;
@@ -158,6 +158,9 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         }
     }
 
+    // ===============================
+    // ▼ ダメージ処理（剣もここに統合）
+    // ===============================
     public void TakeDamage(int damage)
     {
         if (isDead || isInvincible) return;
@@ -165,9 +168,36 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         currentHP -= damage;
         StartInvincibility();
 
-        if (currentHP <= 0) Die();
+        if (currentHP <= 0)
+            Die();
     }
 
+    void StartInvincibility()
+    {
+        isInvincible = true;
+        invincibilityTimer = invincibilityDuration;
+    }
+
+    void HandleInvincibility()
+    {
+        if (!isInvincible) return;
+
+        invincibilityTimer -= Time.deltaTime;
+
+        // 点滅（赤 / 半透明）
+        float alpha = Mathf.PingPong(Time.time * 20f, 1f);
+        spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
+
+        if (invincibilityTimer <= 0f)
+        {
+            isInvincible = false;
+            spriteRenderer.color = originColor;
+        }
+    }
+
+    // ===============================
+    // ▼ 死亡処理
+    // ===============================
     public void Die()
     {
         if (isDead) return;
@@ -184,38 +214,23 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         Destroy(gameObject);
     }
 
-    private void StartInvincibility()
-    {
-        isInvincible = true;
-        invincibilityTimer = invincibilityDuration;
-    }
-
-    private void HandleInvincibility()
-    {
-        if (!isInvincible) return;
-
-        invincibilityTimer -= Time.deltaTime;
-        float alpha = Mathf.PingPong(Time.time * 10f, 1f);
-        spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
-
-        if (invincibilityTimer <= 0f)
-        {
-            isInvincible = false;
-            spriteRenderer.color = originColor;
-        }
-    }
-
+    // ===============================
+    // ▼ 物理判定（剣 / プレイヤー）
+    // ===============================
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // ▼ 剣に当たったらダメージ
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(1);
+        }
+
+        // ▼ プレイヤーに当たったらダメージ（元の処理）
         if (other.CompareTag("Player"))
         {
-            Player player = other.GetComponent<Player>();
-            if (player != null)
-            {
-                player.TakeDamage(1);
-            }
+            Player p = other.GetComponent<Player>();
+            if (p != null)
+                p.TakeDamage(1);
         }
     }
-
 }
-

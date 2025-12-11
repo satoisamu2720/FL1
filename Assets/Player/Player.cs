@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 {
     public static Player Instance { get; private set; }
 
