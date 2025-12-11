@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 {
@@ -294,6 +295,9 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     {
         isDead = true;
         rb.linearVelocity = Vector2.zero;
+
+        SceneManager.LoadScene("GameOver");
+        //MapManager.Instance.Reset();
 
         Debug.Log("Player Dead");
         // ここでゲームオーバー画面とか
