@@ -22,6 +22,26 @@ public class Player : MonoBehaviour
     [Header("長押し判定")]
     public float holdThreshold = 0.3f;
 
+    [Header("止まっている時の画像")]
+    public Sprite upIdle;
+    public Sprite downIdle;
+    public Sprite leftIdle;
+    public Sprite rightIdle;
+
+    [Header("歩いている時の画像")]
+    public Sprite upWalk1;
+    public Sprite upWalk2;
+    public Sprite downWalk1;
+    public Sprite downWalk2;
+    public Sprite leftWalk1;
+    public Sprite leftWalk2;
+    public Sprite rightWalk1;
+    public Sprite rightWalk2;
+
+    private SpriteRenderer sr;
+    private float walkAnimTimer = 0f;
+    public float walkAnimSpeed = 0.15f; // 歩きアニメの速度
+
     private enum AttackState { None, Swing, Charge, Spin }
     private AttackState attackState = AttackState.None;
     private float attackHoldTime = 0f;
@@ -57,7 +77,11 @@ public class Player : MonoBehaviour
 
         currentHP = maxHP;
 
-        if (swordHitbox != null) swordHitbox.SetActive(false);
+        sr = GetComponent<SpriteRenderer>();
+        if (swordHitbox != null)
+        {
+            swordHitbox.SetActive(false);
+        }
     }
 
     void Update()
@@ -73,10 +97,16 @@ public class Player : MonoBehaviour
                 HandleAttackInput();
             }
         }
-
 #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.B)) TakeDamage(1);
-        if (Input.GetKeyDown(KeyCode.N)) RecoverHP(1);
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            Status.Instance.TakeDamage(1);
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Status.Instance.RecoverHP(1);
+        }
+        UpdateAnimation();
 #endif
     }
 
@@ -226,6 +256,69 @@ public class Player : MonoBehaviour
         attackState = AttackState.None;
     }
 
+    private void UpdateAnimation()
+    {
+        Vector2 dir = (movement != Vector2.zero) ? movement : lastMoveDir;
+
+        bool horizontal = Mathf.Abs(dir.x) > Mathf.Abs(dir.y);
+        bool isMoving = movement != Vector2.zero;
+
+        Sprite s = null;
+
+        if (!isMoving)
+        {
+            if (horizontal)
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            else
+                s = (dir.y > 0) ? upIdle : downIdle;
+
+            sr.sprite = s;
+            return;
+        }
+
+        walkAnimTimer += Time.deltaTime;
+
+        if (horizontal)
+        {
+            float t = walkAnimTimer % (walkAnimSpeed * 4f);
+
+            if (t < walkAnimSpeed)
+            {
+               
+                s = (dir.x > 0) ? rightWalk1 : leftWalk1;
+            }
+            else if (t < walkAnimSpeed * 2f)
+            {
+               
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            }
+            else if (t < walkAnimSpeed * 3f)
+            {
+                
+                s = (dir.x > 0) ? rightWalk2 : leftWalk2;
+            }
+            else
+            {
+                
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            }
+
+            sr.sprite = s;
+            return;
+        }
+        bool frame = (walkAnimTimer % (walkAnimSpeed * 2)) < walkAnimSpeed;
+
+        if (dir.y > 0)
+            s = frame ? upWalk1 : upWalk2;
+        else
+            s = frame ? downWalk1 : downWalk2;
+
+        sr.sprite = s;
+    }
+
+
+
+    void Awake()
 
     // ================================
     //           ★ HP関連 ★

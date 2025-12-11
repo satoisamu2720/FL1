@@ -15,6 +15,14 @@ TagManager:
   - Wall
   - Block
   - Ground
+  - Chest
+  - Sword
+  - PlayerBullet
+  - Arrow
+  - Bomb
+  - Door
+  - Wall
+  - Switch
   layers:
   - Default
   - TransparentFX

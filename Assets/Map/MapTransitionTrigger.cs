@@ -33,19 +33,52 @@ public class MapTransitionTrigger : MonoBehaviour
     {
         isTransitioning = true;
 
-        // プレイヤーの操作を一時停止（例：PlayerMovementスクリプト無効化）
         var move = player.GetComponent<Player>();
-        if (move != null) move.enabled = false;
+        if (move != null)
+        {
+            move.enabled = false;
+        }
 
-        // カメラを移動
-        Camera.main.GetComponent<CameraController>().MoveTo(cameraTargetPosition);
+        // カメラ移動
+        Camera.main.GetComponent<CameraController>().MoveTo(playerTargetObject.transform.position);
 
-        // 少し待ってからプレイヤー移動
+        yield return new WaitForSeconds(transitionDelay);
+
+        // ワープ前の位置を保持
+        Vector3 beforePos = player.position;
+
+        // ワープ先に移動
+        Vector3 targetPos = playerTargetObject.transform.position;
+        player.position = targetPos;
+
+        // 押し出す方向を自動判定
+        Vector2 direction = (targetPos - beforePos).normalized;
+
+        // 正規化の結果が (0,0) の場合（同じ場所等）対策
+        if (direction == Vector2.zero)
+        {
+            // プレイヤーとトリガーの位置関係から決める
+            Vector2 diff = (player.position - transform.position);
+            if (Mathf.Abs(diff.x) > Mathf.Abs(diff.y))
+            {
+                direction = new Vector2(Mathf.Sign(diff.x), 0f);
+            }
+            else
+            {
+                direction = new Vector2(0f, Mathf.Sign(diff.y));
+            }
+        }
+
+        // 押し出す量
+        player.position += (Vector3)direction * playerPush;
+
         yield return new WaitForSeconds(transitionDelay);
         player.position = playerTargetPosition.transform.position;
 
-        // プレイヤー操作を戻す
-        if (move != null) move.enabled = true;
+        if (move != null)
+        {
+            move.enabled = true;
+        }
 
         isTransitioning = false;
     }
