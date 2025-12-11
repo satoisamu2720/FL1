@@ -297,6 +297,10 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 
         Debug.Log("Player Dead");
         // ここでゲームオーバー画面とか
+
+
+
+
     }
 
 
