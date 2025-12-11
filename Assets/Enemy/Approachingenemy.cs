@@ -179,6 +179,8 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         if (arrowInstance != null)
             Destroy(arrowInstance.gameObject);
 
+        MapManager.Instance.OpenDoorNum++;
+
         Destroy(gameObject);
     }
 
