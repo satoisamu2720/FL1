@@ -22,6 +22,26 @@ public class Player : MonoBehaviour
     [Header("長押し判定")]
     public float holdThreshold = 0.3f;
 
+    [Header("止まっている時の画像")]
+    public Sprite upIdle;
+    public Sprite downIdle;
+    public Sprite leftIdle;
+    public Sprite rightIdle;
+
+    [Header("歩いている時の画像")]
+    public Sprite upWalk1;
+    public Sprite upWalk2;
+    public Sprite downWalk1;
+    public Sprite downWalk2;
+    public Sprite leftWalk1;
+    public Sprite leftWalk2;
+    public Sprite rightWalk1;
+    public Sprite rightWalk2;
+
+    private SpriteRenderer sr;
+    private float walkAnimTimer = 0f;
+    public float walkAnimSpeed = 0.15f; // 歩きアニメの速度
+
     private enum AttackState { None, Swing, Charge, Spin }
     private AttackState attackState = AttackState.None;
     private float attackHoldTime = 0f;
@@ -38,7 +58,7 @@ public class Player : MonoBehaviour
     private bool isInvincible = false;
     private float invTimer = 0f;
 
-    private SpriteRenderer sprite;
+    //private SpriteRenderer sprite;
     private Color originColor;
     private bool isDead = false;
     // =================================
@@ -52,8 +72,8 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
-        originColor = sprite.color;
+        sr = GetComponent<SpriteRenderer>();
+        originColor = sr.color;
 
         currentHP = maxHP;
 
@@ -73,6 +93,8 @@ public class Player : MonoBehaviour
                 HandleAttackInput();
             }
         }
+
+        UpdateAnimation();
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.B)) TakeDamage(1);
@@ -238,12 +260,12 @@ public class Player : MonoBehaviour
 
         // 点滅表現
         float a = Mathf.PingPong(Time.time * 12f, 1f);
-        sprite.color = new Color(1f, 1f, 1f, a);
+        sr.color = new Color(1f, 1f, 1f, a);
 
         if (invTimer <= 0f)
         {
             isInvincible = false;
-            sprite.color = originColor;
+            sr.color = originColor;
         }
     }
 
@@ -308,6 +330,66 @@ public class Player : MonoBehaviour
                 block.TryPush(dir);
             }
         }
+    }
+
+    private void UpdateAnimation()
+    {
+        Vector2 dir = (movement != Vector2.zero) ? movement : lastMoveDir;
+
+        bool horizontal = Mathf.Abs(dir.x) > Mathf.Abs(dir.y);
+        bool isMoving = movement != Vector2.zero;
+
+        Sprite s = null;
+
+        if (!isMoving)
+        {
+            if (horizontal)
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            else
+                s = (dir.y > 0) ? upIdle : downIdle;
+
+            sr.sprite = s;
+            return;
+        }
+
+        walkAnimTimer += Time.deltaTime;
+
+        if (horizontal)
+        {
+            float t = walkAnimTimer % (walkAnimSpeed * 4f);
+
+            if (t < walkAnimSpeed)
+            {
+
+                s = (dir.x > 0) ? rightWalk1 : leftWalk1;
+            }
+            else if (t < walkAnimSpeed * 2f)
+            {
+
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            }
+            else if (t < walkAnimSpeed * 3f)
+            {
+
+                s = (dir.x > 0) ? rightWalk2 : leftWalk2;
+            }
+            else
+            {
+
+                s = (dir.x > 0) ? rightIdle : leftIdle;
+            }
+
+            sr.sprite = s;
+            return;
+        }
+        bool frame = (walkAnimTimer % (walkAnimSpeed * 2)) < walkAnimSpeed;
+
+        if (dir.y > 0)
+            s = frame ? upWalk1 : upWalk2;
+        else
+            s = frame ? downWalk1 : downWalk2;
+
+        sr.sprite = s;
     }
 
 }
