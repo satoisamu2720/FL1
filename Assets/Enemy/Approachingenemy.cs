@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Approachingenemy : MonoBehaviour
+public class Approachingenemy : MonoBehaviour, ISwordDamageable
 {
     [Header("行動パラメータ")]
     public float speed = 3f;
@@ -74,9 +74,7 @@ public class Approachingenemy : MonoBehaviour
 
     void Update()
     {
-        // ★死亡後は一切処理しない
         if (isDead) return;
-        if (this == null) return; // 念のため安全策
 
         if (player == null)
         {
@@ -92,41 +90,35 @@ public class Approachingenemy : MonoBehaviour
 
     void HandleStateMachine()
     {
-        if (isDead) return;
-
-        switch (state)
+        if (state == State.Idle)
         {
-            case State.Idle:
-                waitTimer -= Time.deltaTime;
-                if (waitTimer <= 0f)
-                {
-                    if (player == null) return;
-                    moveDirection = (player.position - transform.position).normalized;
-                    startPosition = transform.position;
-                    state = State.Rushing;
-                    rushTimer = 1f;
-                }
-                break;
+            waitTimer -= Time.deltaTime;
+            if (waitTimer <= 0f)
+            {
+                moveDirection = (player.position - transform.position).normalized;
+                startPosition = transform.position;
+                state = State.Rushing;
+                rushTimer = 1f;
+            }
+        }
+        else if (state == State.Rushing)
+        {
+            transform.Translate(moveDirection * speed * Time.deltaTime);
+            float traveled = Vector2.Distance(startPosition, transform.position);
+            rushTimer -= Time.deltaTime;
 
-            case State.Rushing:
-                transform.Translate(moveDirection * speed * Time.deltaTime);
-                float traveled = Vector2.Distance(startPosition, transform.position);
-                rushTimer -= Time.deltaTime;
-
-                if (traveled >= rushDistance || rushTimer <= 0f)
-                {
-                    randomChoice = Random.Range(0.1f, 1.0f);
-                    waitTimer = randomChoice;
-                    state = State.Idle;
-                }
-                break;
+            if (traveled >= rushDistance || rushTimer <= 0f)
+            {
+                randomChoice = Random.Range(0.1f, 1.0f);
+                waitTimer = randomChoice;
+                state = State.Idle;
+            }
         }
     }
 
     void HandleArrow()
     {
         if (arrowInstance == null || mainCamera == null || isDead) return;
-        if (this == null) return;
 
         Vector3 viewportPos = mainCamera.WorldToViewportPoint(transform.position);
         bool isOffScreen =
@@ -137,17 +129,16 @@ public class Approachingenemy : MonoBehaviour
 
         if (isOffScreen)
         {
-            Vector3 dir = (transform.position - mainCamera.transform.position).normalized;
+            Vector3 dir = (transform.position - player.position).normalized;
             Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
-            Vector3 screenDir = new Vector3(dir.x, dir.y, 0).normalized;
 
-            Vector3 screenPos = screenCenter + screenDir * 150f;
+            Vector3 screenPos = screenCenter + new Vector3(dir.x, dir.y, 0) * 150f;
             screenPos.x = Mathf.Clamp(screenPos.x, 30f, Screen.width - 30f);
             screenPos.y = Mathf.Clamp(screenPos.y, 30f, Screen.height - 30f);
 
             arrowInstance.position = screenPos;
 
-            float angle = Mathf.Atan2(screenDir.y, screenDir.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             arrowInstance.rotation = Quaternion.Euler(0, 0, angle - 90f);
         }
     }
@@ -158,21 +149,8 @@ public class Approachingenemy : MonoBehaviour
 
         if (state == State.Rushing)
         {
-            float x = moveDirection.x;
-            if (x > 0.01f)
-            {
-                lastDirection = FacingDirection.Right;
-                animator.Play("zombie_Right");
-            }
-            else if (x < -0.01f)
-            {
-                lastDirection = FacingDirection.Left;
-                animator.Play("zombie_Left");
-            }
-            else
-            {
-                animator.Play(lastDirection == FacingDirection.Right ? "zombie_Right" : "zombie_Left");
-            }
+            if (moveDirection.x > 0) animator.Play("zombie_Right");
+            else animator.Play("zombie_Left");
         }
         else
         {
@@ -187,10 +165,7 @@ public class Approachingenemy : MonoBehaviour
         currentHP -= damage;
         StartInvincibility();
 
-        if (currentHP <= 0)
-        {
-            Die();
-        }
+        if (currentHP <= 0) Die();
     }
 
     public void Die()
@@ -199,22 +174,11 @@ public class Approachingenemy : MonoBehaviour
         isDead = true;
 
         if (itemPrefab != null)
-        {
             Instantiate(itemPrefab, transform.position, Quaternion.identity);
-        }
 
-        // ★Arrow破棄
         if (arrowInstance != null)
-        {
             Destroy(arrowInstance.gameObject);
-            arrowInstance = null;
-        }
 
-        // ★コルーチンやInvokeを停止（安全策）
-        StopAllCoroutines();
-        CancelInvoke();
-
-        // ★フレーム末で破棄
         Destroy(gameObject);
     }
 
@@ -226,7 +190,7 @@ public class Approachingenemy : MonoBehaviour
 
     private void HandleInvincibility()
     {
-        if (!isInvincible || isDead) return;
+        if (!isInvincible) return;
 
         invincibilityTimer -= Time.deltaTime;
         float alpha = Mathf.PingPong(Time.time * 10f, 1f);
@@ -236,38 +200,6 @@ public class Approachingenemy : MonoBehaviour
         {
             isInvincible = false;
             spriteRenderer.color = originColor;
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (isDead) return;
-
-        if (state == State.Rushing && collision.collider.CompareTag("Wall"))
-        {
-            state = State.Idle;
-            waitTimer = waitTime;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (isDead) return;
-
-        if (collision.CompareTag("SwordHitbox"))
-        {
-            TakeDamage(1);
-            Destroy(collision.gameObject);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        // ★念のためArrow削除（破棄タイミングのズレ対策）
-        if (arrowInstance != null)
-        {
-            Destroy(arrowInstance.gameObject);
-            arrowInstance = null;
         }
     }
 }

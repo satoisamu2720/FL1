@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class ShootEnemy : MonoBehaviour
+public class BulletEnemy : MonoBehaviour, ISwordDamageable
 {
-    public static ShootEnemy Instance { get; private set; }
+    public static BulletEnemy Instance { get; private set; }
 
     [Header("Movement Settings")]
     public float speed = 2f;
@@ -59,7 +59,6 @@ public class ShootEnemy : MonoBehaviour
             if (player == null) return;
         }
 
-        // �ˌ��^�C�}�[
         shootTimer -= Time.deltaTime;
         if (shootTimer <= 0f)
         {
@@ -119,10 +118,7 @@ public class ShootEnemy : MonoBehaviour
         currentHP -= damage;
         StartInvincibility();
 
-        if (currentHP <= 0)
-        {
-            Die();
-        }
+        if (currentHP <= 0) Die();
     }
 
     void StartInvincibility()
@@ -137,14 +133,12 @@ public class ShootEnemy : MonoBehaviour
 
         invincibilityTimer -= Time.deltaTime;
         float alpha = Mathf.PingPong(Time.time * 10f, 1f);
-        if (spriteRenderer != null)
-            spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
+        spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
 
         if (invincibilityTimer <= 0f)
         {
             isInvincible = false;
-            if (spriteRenderer != null)
-                spriteRenderer.color = originColor;
+            spriteRenderer.color = originColor;
         }
     }
 

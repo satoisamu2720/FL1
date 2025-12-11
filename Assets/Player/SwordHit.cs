@@ -4,13 +4,11 @@ public class SwordHitbox : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("DivisionEnemy") || other.CompareTag("MiniEnemy"))
+        ISwordDamageable target = other.GetComponent<ISwordDamageable>();
+
+        if (target != null)
         {
-            DivisionEnemy enemy = other.GetComponent<DivisionEnemy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(1);
-            }
+            target.TakeDamage(1);
         }
     }
 }

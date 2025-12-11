@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8408999022250456919}
   - component: {fileID: 4925945289340673079}
   - component: {fileID: 2047206956216605788}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MagicBullet
   m_TagString: MagicBullet
   m_Icon: {fileID: 0}
@@ -76,8 +76,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -2048797451
+  m_SortingLayer: 2
   m_SortingOrder: 7
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 1, g: 0.9886946, b: 0.050943315, a: 1}
@@ -120,7 +120,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -150,6 +150,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   bulletSpeed: 10
+  maxEnemyReflects: 5
+  shooter: {fileID: 0}
 --- !u!50 &2047206956216605788
 Rigidbody2D:
   serializedVersion: 5

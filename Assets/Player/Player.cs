@@ -10,64 +10,87 @@ public class Player : MonoBehaviour
     private Vector2 attackDir;
 
     [Header("攻撃パラメータ")]
-    public GameObject swordHitbox;        // 剣の当たり判定プレハブ
-    public float attackDuration = 0.2f;   // 通常攻撃(スウィング)の時間
-    public float hitboxDistance = 0.6f;   // プレイヤーからの距離
-    public float swingArc = 75f;          // スウィングの回転角度
+    public GameObject swordHitbox;
+    public float attackDuration = 0.2f;
+    public float hitboxDistance = 0.6f;
+    public float swingArc = 75f;
 
     [Header("回転攻撃パラメータ")]
-    public float spinDuration = 0.6f;     // 回転攻撃の時間
-    public float spinSpeed = 720f;        // 回転速度（°/秒）
+    public float spinDuration = 0.6f;
+    public float spinSpeed = 720f;
 
     [Header("長押し判定")]
-    public float holdThreshold = 0.3f;    // 長押しと判定するまでの時間
+    public float holdThreshold = 0.3f;
 
     private enum AttackState { None, Swing, Charge, Spin }
     private AttackState attackState = AttackState.None;
+    private float attackHoldTime = 0f;
 
-    private float attackHoldTime = 0f; // ボタン押しっぱなし時間計測
+    // =================================
+    //        ★★ HP / ダメージ ★★
+    // =================================
+    [Header("HP パラメータ")]
+    public int maxHP = 5;
+    public int currentHP;
+
+    [Header("無敵時間")]
+    public float invincibleTime = 0.5f;
+    private bool isInvincible = false;
+    private float invTimer = 0f;
+
+    private SpriteRenderer sprite;
+    private Color originColor;
+    private bool isDead = false;
+    // =================================
+
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
+        originColor = sprite.color;
+
+        currentHP = maxHP;
+
         if (swordHitbox != null) swordHitbox.SetActive(false);
     }
 
     void Update()
     {
+        if (isDead) return;
+
+        HandleHPInvincible();  // ← 無敵時間制御
+
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {
-            var equipped = Inventory.Instance.GetEquippedItem();
-
-            // 剣を装備済みなら常に使える
             if (Inventory.Instance.HasSword())
             {
                 HandleAttackInput();
             }
         }
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            Status.Instance.TakeDamage(1);
-        }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            Status.Instance.RecoverHP(1);
-        }
 
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.B)) TakeDamage(1);
+        if (Input.GetKeyDown(KeyCode.N)) RecoverHP(1);
 #endif
     }
 
+
     void FixedUpdate()
     {
-        if (GameManager.Instance != null && !GameManager.Instance.isPause )
+        if (isDead) return;
+
+        if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {
             movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
             if (movement != Vector2.zero)
-            {
                 lastMoveDir = movement;
-            }
 
             switch (attackState)
             {
@@ -76,12 +99,7 @@ public class Player : MonoBehaviour
                     break;
 
                 case AttackState.Charge:
-                    // チャージ中も低速で移動
                     MovePlayer(Status.Instance.PlayerSpeed * 0.4f);
-                    break;
-
-                default:
-                    // Swing, Spin中は動けない
                     break;
             }
         }
@@ -91,28 +109,26 @@ public class Player : MonoBehaviour
     {
         rb.MovePosition(rb.position + movement * speed * Time.deltaTime);
     }
-   
 
+
+    // ================================
+    //           攻撃処理
+    // ================================
     private void HandleAttackInput()
     {
-        // 押した瞬間：通常攻撃開始
         if (Input.GetButtonDown("Fire1") && attackState == AttackState.None)
         {
             attackHoldTime = 0f;
-
-            // 攻撃開始時の方向を固定
             attackDir = (movement != Vector2.zero) ? movement : lastMoveDir;
 
             StartCoroutine(SwingAttack());
         }
 
-        // 押している間：ホールド時間をカウント
         if (Input.GetButton("Fire1"))
         {
             attackHoldTime += Time.deltaTime;
         }
 
-        // 離した瞬間：回転斬り発動
         if (Input.GetButtonUp("Fire1"))
         {
             if (attackState == AttackState.Charge)
@@ -120,16 +136,13 @@ public class Player : MonoBehaviour
                 StartCoroutine(SpinAttack());
             }
         }
-
     }
-
 
     private System.Collections.IEnumerator SwingAttack()
     {
         attackState = AttackState.Swing;
         swordHitbox.SetActive(true);
 
-        // 基本の角度を計算
         float baseAngle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
         float startAngle = baseAngle - swingArc / 2f;
         float endAngle = baseAngle + swingArc / 2f;
@@ -154,7 +167,6 @@ public class Player : MonoBehaviour
             yield return null;
         }
 
-        // スウィング後：まだ押していて、かつ長押し判定を超えていたら突きへ
         if (Input.GetButton("Fire1") && attackHoldTime >= holdThreshold)
         {
             attackState = AttackState.Charge;
@@ -169,7 +181,6 @@ public class Player : MonoBehaviour
 
     private void HoldThrust()
     {
-        // 押した瞬間の方向に固定
         float baseAngle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
         float snappedAngle = Mathf.Round(baseAngle / 45f) * 45f;
 
@@ -189,7 +200,6 @@ public class Player : MonoBehaviour
         float elapsed = 0f;
         swordHitbox.SetActive(true);
 
-        // 攻撃開始方向を基準に回転
         float baseAngle = Mathf.Atan2(attackDir.y, attackDir.x) * Mathf.Rad2Deg;
 
         while (elapsed < spinDuration)
@@ -213,10 +223,57 @@ public class Player : MonoBehaviour
         attackState = AttackState.None;
     }
 
-    void Awake()
+
+    // ================================
+    //           ★ HP関連 ★
+    // ================================
+    private void HandleHPInvincible()
     {
-        Instance = this;
+        if (!isInvincible) return;
+
+        invTimer -= Time.deltaTime;
+
+        // 点滅表現
+        float a = Mathf.PingPong(Time.time * 12f, 1f);
+        sprite.color = new Color(1f, 1f, 1f, a);
+
+        if (invTimer <= 0f)
+        {
+            isInvincible = false;
+            sprite.color = originColor;
+        }
     }
+
+    public void TakeDamage(int dmg)
+    {
+        if (isInvincible || isDead) return;
+
+        currentHP -= dmg;
+
+        if (currentHP <= 0)
+        {
+            Die();
+            return;
+        }
+
+        isInvincible = true;
+        invTimer = invincibleTime;
+    }
+
+    public void RecoverHP(int v)
+    {
+        currentHP = Mathf.Min(maxHP, currentHP + v);
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        rb.linearVelocity = Vector2.zero;
+
+        Debug.Log("Player Dead");
+        // ここでゲームオーバー画面とか
+    }
+
 
     void OnDestroy()
     {
