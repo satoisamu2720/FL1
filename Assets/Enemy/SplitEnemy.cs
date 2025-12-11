@@ -1,170 +1,90 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SplitEnemy : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float speed = 5f;
-    public float rushDistance = 5f;
-    public float waitTime = 1.5f;
-    public float rushTimeout = 1f;
-    public float separationDistance = 1.5f;
+    [Header("Movement")]
+    public float moveSpeed = 3f;
 
-    [Header("HP Settings")]
-    public int maxHP = 1;
-    public GameObject itemPrefab;
-
-    private Transform player;
-    private Vector2 moveDirection;
-    private Vector2 startPosition;
-    private float waitTimer = 0f;
-    private float rushTimer = 0f;
-    private int currentHP;
-
-    private enum State { Idle, Rushing }
-    private State state = State.Idle;
+    [Header("Gather State")]
+    private bool isGathering = false;
+    private Transform gatherTarget;
 
     private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
-    private Color originColor;
-    private bool isInvincible = false;
-    private float invincibilityTimer = 0f;
-    [SerializeField] private float invincibilityDuration = 0.5f;
+    private Transform player;
 
-    private bool isDead = false;
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0;
+        }
+
+        if (GetComponent<Collider2D>() == null)
+        {
+            gameObject.AddComponent<CircleCollider2D>();
+        }
+    }
 
     void Start()
     {
+        // ‚òÖ „Éó„É¨„Ç§„É§„ÉºÂèñÂæó ‚òÖ
         player = GameObject.FindWithTag("Player")?.transform;
-        rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        originColor = spriteRenderer.color;
-
-        waitTimer = 0f; // ë¶çsìÆäJén
-        currentHP = maxHP;
     }
 
     void Update()
     {
-        // ÉvÉåÉCÉÑÅ[Ç™Ç¢Ç»ÇØÇÍÇŒâΩÇ‡ÇµÇ»Ç¢ÅinullÉ`ÉFÉbÉNÅj
-        if (player == null)
+        if (isGathering)
         {
-            player = GameObject.FindWithTag("Player")?.transform;
-            return;
+            MoveTowardGatherPoint();
         }
-
-        HandleSeparation();
-        HandleStateMachine();
-        HandleInvincibility();
-    }
-
-    void HandleStateMachine()
-    {
-        switch (state)
+        else
         {
-            case State.Idle:
-                waitTimer -= Time.deltaTime;
-                if (waitTimer <= 0f)
-                {
-                    moveDirection = (player.position - transform.position).normalized;
-                    startPosition = transform.position;
-                    rushTimer = rushTimeout;
-                    state = State.Rushing;
-                }
-                break;
-
-            case State.Rushing:
-                Vector2 newPos = rb.position + moveDirection * speed * Time.deltaTime;
-                rb.MovePosition(newPos);
-
-                float traveled = Vector2.Distance(startPosition, rb.position);
-                rushTimer -= Time.deltaTime;
-
-                if (traveled >= rushDistance || rushTimer <= 0f)
-                {
-                    state = State.Idle;
-                    waitTimer = waitTime;
-                }
-                break;
+            ChasePlayer();
         }
     }
 
-    void HandleSeparation()
+    // -------------------------
+    // ‚òÖ „Éó„É¨„Ç§„É§„ÉºËøΩÂæì ‚òÖ
+    // -------------------------
+    void ChasePlayer()
     {
-        GameObject[] allSplitEnemies = GameObject.FindGameObjectsWithTag("MiniEnemy");
+        if (player == null) return;
 
-        foreach (var other in allSplitEnemies)
-        {
-            if (other == this.gameObject) continue;
-
-            float dist = Vector2.Distance(transform.position, other.transform.position);
-            if (dist < separationDistance)
-            {
-                Vector2 pushDir = (transform.position - other.transform.position).normalized;
-                rb.MovePosition(rb.position + pushDir * Time.deltaTime * 1f);
-            }
-        }
+        Vector2 dir = (player.position - transform.position).normalized;
+        rb.linearVelocity = dir * moveSpeed;
     }
 
-    void HandleInvincibility()
+    // -------------------------
+    // ÈõÜÂêàÁä∂ÊÖã
+    // -------------------------
+    void MoveTowardGatherPoint()
     {
-        if (!isInvincible) return;
+        if (gatherTarget == null) return;
 
-        invincibilityTimer -= Time.deltaTime;
-        float alpha = Mathf.PingPong(Time.time * 10f, 1f);
-        spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
-
-        if (invincibilityTimer <= 0f)
-        {
-            isInvincible = false;
-            spriteRenderer.color = originColor;
-        }
+        Vector2 dir = (gatherTarget.position - transform.position).normalized;
+        rb.linearVelocity = dir * moveSpeed;
     }
 
-    public void TakeDamage(int damage)
+    // -------------------------
+    // „Éú„Çπ„ÅÆÈõÜÂêàÂëΩ‰ª§
+    // -------------------------
+    public void StartGathering(Transform target)
     {
-        if (isInvincible || isDead) return;
-
-        currentHP -= damage;
-
-        if (currentHP <= 0)
-        {
-            Die();
-            return;
-        }
-
-        StartInvincibility();
+        isGathering = true;
+        gatherTarget = target;
     }
 
-    void StartInvincibility()
+    public void StopGathering()
     {
-        isInvincible = true;
-        invincibilityTimer = invincibilityDuration;
+        isGathering = false;
+        gatherTarget = null;
+        rb.linearVelocity = Vector2.zero;
     }
 
     public void Die()
     {
-        if (isDead) return;
-        isDead = true;
-
-        rb.linearVelocity = Vector2.zero;
-        rb.simulated = false;
-        GetComponent<Collider2D>().enabled = false;
-
-        if (itemPrefab != null)
-        {
-            Instantiate(itemPrefab, transform.position, Quaternion.identity);
-        }
-
-        Destroy(gameObject, 0.3f);
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Bullet"))
-        {
-            TakeDamage(1);
-            Destroy(collision.gameObject);
-        }
+        Destroy(gameObject);
     }
 }

@@ -45,15 +45,21 @@ public class ReflectMage : MonoBehaviour
 
     void Shoot()
     {
-        if (bulletPrefab == null || player == null) return;
+        GameObject bulletObj = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        MagicBullet bullet = bulletObj.GetComponent<MagicBullet>();
+        bullet.shooter = this;   // ★ 誰が撃ったかセット
+
         Vector2 direction = (player.position - transform.position).normalized;
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+        Rigidbody2D rb = bulletObj.GetComponent<Rigidbody2D>();
         rb.linearVelocity = direction * bulletSpeed;
-        bullet.tag = "MagicBullet"; // 敵の弾として生成
-        bullet.GetComponent<SpriteRenderer>().color = Color.red;
+
+        bulletObj.tag = "MagicBullet";
+        bulletObj.layer = LayerMask.NameToLayer("EnemyBullet");
+
+        bulletObj.GetComponent<SpriteRenderer>().color = Color.red;
     }
+
 
     public void TakeDamage(int dmg)
     {

@@ -2,12 +2,16 @@ using UnityEngine;
 
 public class MagicBullet : MonoBehaviour
 {
+    [Header("Damage / Speed")]
     public int damage = 1;
     public float bulletSpeed = 10f;
 
-    private bool reflectedByPlayer = false;
+    [Header("Reflection Settings")]
+    public int maxEnemyReflects = 5;
+
+    [HideInInspector] public ReflectMage shooter;     // ★ この弾を撃った敵
     private int enemyReflectCount = 0;
-    private int maxEnemyReflects = 5;
+    private bool reflectedByPlayer = false;
 
     private Rigidbody2D rb;
 
@@ -18,78 +22,83 @@ public class MagicBullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ★ プレイヤーに当たったら反射して、敵へ向かう
+        // ★ 自分を撃った敵には当たらない
+        var enemyHit = other.GetComponent<ReflectMage>();
+        if (enemyHit != null && enemyHit == shooter)
+            return;
+
+        // ★ プレイヤー反射（最初の一回だけ）
         if (other.CompareTag("Player") && !reflectedByPlayer)
         {
             reflectedByPlayer = true;
-
-            // 近い敵の方向へ向ける
             ReflectTowardClosestEnemy();
 
-            GetComponent<SpriteRenderer>().color = Color.cyan;
             gameObject.tag = "PlayerBullet";
+            gameObject.layer = LayerMask.NameToLayer("PlayerBullet");
+            GetComponent<SpriteRenderer>().color = Color.cyan;
+
             return;
         }
 
         // ★ 敵に当たった場合
-        if (other.GetComponent<ReflectMage>() != null)
+        if (enemyHit != null)
         {
-            ReflectMage enemy = other.GetComponent<ReflectMage>();
-
-            // ランダムで反射
+            // --- 敵がランダムで反射する ---
             if (Random.value > 0.5f && enemyReflectCount < maxEnemyReflects)
             {
                 enemyReflectCount++;
-
-                // 敵 → プレイヤー方向へ飛ぶ
                 ReflectTowardPlayer();
 
-                GetComponent<SpriteRenderer>().color = Color.red;
                 gameObject.tag = "MagicBullet";
+                gameObject.layer = LayerMask.NameToLayer("EnemyBullet");
+                GetComponent<SpriteRenderer>().color = Color.red;
 
-                return; // 反射しただけでダメージなし
+                return;  // 反射しただけでダメージなし
             }
 
-            // ダメージ
-            enemy.TakeDamage(damage);
+            // --- 反射しない場合 → ダメージ与える ---
+            enemyHit.TakeDamage(damage);
             Destroy(gameObject);
+            return;
         }
 
-        // 壁
+        // ★ 壁に当たったら破壊
         if (other.CompareTag("Wall"))
         {
             Destroy(gameObject);
         }
     }
 
-    // ★ プレイヤーが弾を反射したとき、敵へ向ける
+    // ================================================================
+    // 最も近い敵へ飛ばす（プレイヤー反射時）
+    // ================================================================
     private void ReflectTowardClosestEnemy()
     {
         ReflectMage[] enemies = FindObjectsOfType<ReflectMage>();
         if (enemies.Length == 0) return;
 
-        // 最も近い敵を探す
         ReflectMage nearest = null;
         float minDist = float.MaxValue;
 
         foreach (var e in enemies)
         {
             float dist = Vector2.Distance(transform.position, e.transform.position);
-            if (dist < minDist)
+            if (e != shooter && dist < minDist)
             {
                 minDist = dist;
                 nearest = e;
             }
         }
 
-        if (nearest != null)
-        {
-            Vector2 dir = (nearest.transform.position - transform.position).normalized;
-            rb.linearVelocity = dir * bulletSpeed;
-        }
+        if (nearest == null) return;
+
+        Vector2 dir = (nearest.transform.position - transform.position).normalized;
+        rb.linearVelocity = dir * bulletSpeed;
     }
 
-    // ★ 敵が弾を反射したとき、プレイヤー方向へ飛ぶ
+    // ================================================================
+    // 敵が反射 → プレイヤーへ飛ばす
+    // ================================================================
     private void ReflectTowardPlayer()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
