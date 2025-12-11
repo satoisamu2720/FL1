@@ -177,7 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   minDistanceFromPlayer: 3
-  maxHP: 3
+  maxHP: 2
   bulletPrefab: {fileID: 8754621766251140444, guid: f81decd79bcd4394eaaf575482a93897, type: 3}
   shootInterval: 2
   itemPrefab: {fileID: 0}
