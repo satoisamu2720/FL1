@@ -76,15 +76,25 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         if (bulletPrefab != null && player != null)
         {
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+
             Vector2 direction = (player.position - transform.position).normalized;
+
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            if (rb == null)
             {
-                rb.linearVelocity = direction * 12f;
+                rb = bullet.AddComponent<Rigidbody2D>();
+                rb.bodyType = RigidbodyType2D.Kinematic;
+                rb.gravityScale = 0;
+                rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             }
+
+            rb.linearVelocity = direction * 12f;
+
             Destroy(bullet, 5f);
         }
     }
+
+
 
     void MoveAwayFromPlayer()
     {
