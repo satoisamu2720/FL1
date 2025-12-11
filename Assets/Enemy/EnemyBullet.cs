@@ -128,7 +128,7 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
             TakeDamage(1);
         }
 
-        // ▼ プレイヤーに当たったらダメージ（元の処理）
+        // �� �v���C���[�ɓ���������_���[�W�i���̏����j
         if (other.CompareTag("Player"))
         {
             Player p = other.GetComponent<Player>();
