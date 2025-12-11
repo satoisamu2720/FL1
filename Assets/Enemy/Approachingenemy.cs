@@ -16,7 +16,7 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
     public GameObject arrowUIPrefab;
 
     [Header("無敵設定")]
-    [SerializeField] private float invincibilityDuration = 2f;
+    [SerializeField] private float invincibilityDuration = 0.4f; // 点滅時間短め推奨
 
     private int currentHP;
     private Transform player;
@@ -159,6 +159,9 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         }
     }
 
+    // ===============================
+    // ▼ ダメージ処理（剣もここに統合）
+    // ===============================
     public void TakeDamage(int damage)
     {
         if (isDead || isInvincible)
@@ -175,7 +178,7 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         }
     }
 
-    public void Die()
+    void StartInvincibility()
     {
         if (isDead)
         {
@@ -206,12 +209,14 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         invincibilityTimer = invincibilityDuration;
     }
 
-    private void HandleInvincibility()
+    void HandleInvincibility()
     {
         if (!isInvincible) return;
 
         invincibilityTimer -= Time.deltaTime;
-        float alpha = Mathf.PingPong(Time.time * 10f, 1f);
+
+        // 点滅（赤 / 半透明）
+        float alpha = Mathf.PingPong(Time.time * 20f, 1f);
         spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
 
         if (invincibilityTimer <= 0f)
@@ -258,15 +263,18 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // ▼ 剣に当たったらダメージ
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(1);
+        }
+
+        // ▼ プレイヤーに当たったらダメージ（元の処理）
         if (other.CompareTag("Player"))
         {
-            Player player = other.GetComponent<Player>();
-            if (player != null)
-            {
-                player.TakeDamage(1);
-            }
+            Player p = other.GetComponent<Player>();
+            if (p != null)
+                p.TakeDamage(1);
         }
     }
-
 }
-

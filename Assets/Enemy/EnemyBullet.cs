@@ -94,8 +94,6 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         }
     }
 
-
-
     void MoveAwayFromPlayer()
     {
         float distance = Vector2.Distance(transform.position, player.position);
@@ -121,12 +119,14 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         }
     }
 
+    // ★ 剣が当たると自動で呼ばれる部分 ★
     public void TakeDamage(int damage)
     {
         if (isDead || isInvincible) return;
 
         currentHP -= damage;
-        StartInvincibility();
+
+        StartInvincibility(); // 点滅開始
 
         if (currentHP <= 0) Die();
     }
@@ -168,5 +168,4 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         if (Instance == this)
             Instance = null;
     }
-
 }
