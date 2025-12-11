@@ -92,14 +92,17 @@ public class Player : MonoBehaviour
             if (movement != Vector2.zero)
                 lastMoveDir = movement;
 
+            // プレイヤー移動
             switch (attackState)
             {
                 case AttackState.None:
                     MovePlayer(Status.Instance.PlayerSpeed);
+                    PushBlockCheck();  // ★ここ追加
                     break;
 
                 case AttackState.Charge:
                     MovePlayer(Status.Instance.PlayerSpeed * 0.4f);
+                    PushBlockCheck();  // ★チャージ中も押せる
                     break;
             }
         }
@@ -280,4 +283,31 @@ public class Player : MonoBehaviour
         if (Instance == this)
             Instance = null;
     }
+
+    private void PushBlockCheck()
+    {
+        if (attackState != AttackState.None && attackState != AttackState.Charge)
+            return;
+
+        // movementが0でも、lastMoveDirを使う
+        Vector2 dir = movement != Vector2.zero ? movement : lastMoveDir;
+        if (dir == Vector2.zero) return;
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            rb.position,
+            dir,
+            0.6f,
+            LayerMask.GetMask("Block")
+        );
+
+        if (hit.collider != null)
+        {
+            PushBlock block = hit.collider.GetComponent<PushBlock>();
+            if (block != null)
+            {
+                block.TryPush(dir);
+            }
+        }
+    }
+
 }

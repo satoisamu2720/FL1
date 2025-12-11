@@ -3,16 +3,28 @@ using UnityEngine;
 public class MapTransitionTrigger : MonoBehaviour
 {
     public Vector3 cameraTargetPosition;  // 次のマップ中心
-    public Vector3 playerTargetPosition;  // プレイヤーの新しい位置
+    public GameObject playerTargetPosition;  // プレイヤーの新しい位置
     public float transitionDelay = 0.5f;  // スクロール演出の間
+
+    public int doorID;               // ← この扉の識別番号
+    public int nextMapID;            // 移動先マップID
+    //public Vector3 nextPlayerPos;    // ワープ後の位置
+    //public Vector3 nextCameraPos;
+
 
     private bool isTransitioning = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isTransitioning) return;
-        if (other.CompareTag("Player"))
+        if (isTransitioning)
         {
+            return;
+        }
+
+        if (other.CompareTag("Player") && MapManager.Instance.isOpenDoor == true)
+        {
+            MapManager.Instance.MapTransition(doorID, nextMapID);
+            MapManager.Instance.Reset();
             StartCoroutine(Transition(other.transform));
         }
     }
@@ -30,7 +42,7 @@ public class MapTransitionTrigger : MonoBehaviour
 
         // 少し待ってからプレイヤー移動
         yield return new WaitForSeconds(transitionDelay);
-        player.position = playerTargetPosition;
+        player.position = playerTargetPosition.transform.position;
 
         // プレイヤー操作を戻す
         if (move != null) move.enabled = true;
