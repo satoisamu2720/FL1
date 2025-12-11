@@ -45,7 +45,12 @@ public class MapManager : MonoBehaviour
 
         if (mapID == 0)
         {
-            isGimickClearMap[0] = true;
+            //isGimickClearMap[0] = true;
+
+            if(OpenDoorNum == 3)
+            {
+                isGimickClearMap[0] = true;
+            }
 
             if (isGimickClearMap[0] == true)
             {
@@ -79,6 +84,12 @@ public class MapManager : MonoBehaviour
 
         if (mapID == 2)
         {
+
+            if(OpenDoorNum == 3)
+            {
+                isGimickClearMap[2] = true;
+            }
+
             if (isGimickClearMap[2] == true)
             {
                 isOpenDoor = true;
@@ -91,6 +102,9 @@ public class MapManager : MonoBehaviour
 
         if (mapID == 3)
         {
+
+            isGimickClearMap[3] = true;
+
             if (isGimickClearMap[3] == true)
             {
                 isOpenDoor = true;
@@ -103,6 +117,12 @@ public class MapManager : MonoBehaviour
 
         if (mapID == 4)
         {
+
+            if(OpenDoorNum == 4)
+            {
+                isGimickClearMap[4] = true;
+            }
+
             if (isGimickClearMap[4] == true)
             {
                 isOpenDoor = true;
