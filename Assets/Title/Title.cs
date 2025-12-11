@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Clear : MonoBehaviour
+public class Title : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -14,7 +14,7 @@ public class Clear : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Fire1"))
         {
-            SceneManager.LoadScene("test");
+            SceneManager.LoadScene("GaidScene");
         }
     }
 }

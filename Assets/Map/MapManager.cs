@@ -52,11 +52,16 @@ public class MapManager : MonoBehaviour
             {
                 isGimickClearMap[0] = true;
             }
+            else
+            {
+                isGimickClearMap[0] = false;
+            }
 
             if (isGimickClearMap[0] == true)
             {
                 //isOpenDoor = true;
                 SceneManager.LoadScene("ClearScene");
+                Reset();
             }
             else
             {
