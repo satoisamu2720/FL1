@@ -274,6 +274,8 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     {
         if (isInvincible || isDead) return;
 
+        Status.Instance.TakeDamage(dmg);
+
         currentHP -= dmg;
 
         if (currentHP <= 0)

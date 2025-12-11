@@ -17,7 +17,8 @@ public class PlayerItemUse : MonoBehaviour
 
     void Start()
     {
-        
+
+        Inventory.Instance.AddItem(0); // Œ•
 
         var item = Inventory.Instance.GetSelectedItem();
         if (item != null)

@@ -1562,7 +1562,7 @@ MonoBehaviour:
   currentMapID: 0
   isGimickClearMap: 000000000000
   isOpenDoor: 0
-  OpenDoorNum: -109
+  OpenDoorNum: 0
 --- !u!4 &1252646154 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3410236256852468679, guid: 28e1027b3287c9b4285b0104bf508337, type: 3}
@@ -2896,6 +2896,14 @@ PrefabInstance:
       propertyPath: maxHP
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1796172973027425637, guid: 3bf7d617247279441a0e87ccfee0c404, type: 3}
+      propertyPath: speed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1796172973027425637, guid: 3bf7d617247279441a0e87ccfee0c404, type: 3}
+      propertyPath: minDistanceFromPlayer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3787981365633990243, guid: 3bf7d617247279441a0e87ccfee0c404, type: 3}
       propertyPath: m_Name
       value: BulletEnemy
@@ -3038,26 +3046,6 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
-      propertyPath: upIdle
-      value: 
-      objectReference: {fileID: 7431519047228137879, guid: 93ae1569dfe7e2e4faa736dd7f634564, type: 3}
-    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
-      propertyPath: upWalk1
-      value: 
-      objectReference: {fileID: 1662678064460083059, guid: ce9298832b3ebbc409a2438f08166598, type: 3}
-    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
-      propertyPath: upWalk2
-      value: 
-      objectReference: {fileID: -1335483175324879448, guid: 0fd5a4e22557e5c44bffdbfa12425ad0, type: 3}
-    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
-      propertyPath: downIdle
-      value: 
-      objectReference: {fileID: -8954784412576510402, guid: 5f42671a9eeea03418f3bd73260e6929, type: 3}
-    - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
-      propertyPath: leftIdle
-      value: 
-      objectReference: {fileID: -3582900414325746730, guid: a97af0ffd1e9be847b52359cb5722756, type: 3}
     - target: {fileID: 8680633626903323285, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
       propertyPath: upIdle
       value: 
