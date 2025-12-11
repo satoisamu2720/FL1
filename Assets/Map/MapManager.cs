@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapManager : MonoBehaviour
 {
@@ -54,7 +55,8 @@ public class MapManager : MonoBehaviour
 
             if (isGimickClearMap[0] == true)
             {
-                isOpenDoor = true;
+                //isOpenDoor = true;
+                SceneManager.LoadScene("ClearScene");
             }
             else
             {
