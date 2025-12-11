@@ -158,4 +158,5 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
         if (Instance == this)
             Instance = null;
     }
+
 }
