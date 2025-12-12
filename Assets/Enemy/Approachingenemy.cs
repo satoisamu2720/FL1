@@ -183,10 +183,13 @@ public class Approachingenemy : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isDead || isInvincible) return;
+        if (isDead || isInvincible)
+        {
+            currentHP -= damage;
+            StartInvincibility();
+        }
 
-        currentHP -= damage;
-        StartInvincibility();
+
 
         if (currentHP <= 0)
         {
@@ -196,8 +199,11 @@ public class Approachingenemy : MonoBehaviour
 
     public void Die()
     {
-        if (isDead) return;
-        isDead = true;
+        if (isDead)
+        {
+            isDead = true;
+        }
+        
 
         if (itemPrefab != null)
         {
@@ -214,6 +220,9 @@ public class Approachingenemy : MonoBehaviour
         // ★コルーチンやInvokeを停止（安全策）
         StopAllCoroutines();
         CancelInvoke();
+
+        //経験値を渡す
+        PlayerStats.Instance.AddExperience(expAmount);
 
         // ★フレーム末で破棄
         Destroy(gameObject);
@@ -255,7 +264,7 @@ public class Approachingenemy : MonoBehaviour
     {
         if (isDead) return;
 
-        if (collision.CompareTag("SwordHitbox"))
+        if (collision.CompareTag("Sword"))
         {
             TakeDamage(1);
             Destroy(collision.gameObject);
@@ -271,5 +280,6 @@ public class Approachingenemy : MonoBehaviour
             arrowInstance = null;
         }
     }
+}
 
    

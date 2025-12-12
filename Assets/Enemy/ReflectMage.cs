@@ -10,6 +10,7 @@ public class ReflectMage : MonoBehaviour
     public GameObject bulletPrefab;
     public float shootInterval = 3f;
     public float bulletSpeed = 10f;
+    public int expAmount = 100;
     private float shootTimer;
 
     private Transform player;
@@ -58,6 +59,10 @@ public class ReflectMage : MonoBehaviour
     {
         currentHP -= dmg;
         StartCoroutine(HitFlash());
+
+        //経験値を渡す
+        PlayerStats.Instance.AddExperience(expAmount);
+
 
         if (currentHP <= 0)
         {
