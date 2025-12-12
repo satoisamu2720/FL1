@@ -76,7 +76,7 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
         sr = GetComponent<SpriteRenderer>();
         originColor = sr.color;
 
-        currentHP = maxHP;
+        currentHP = Status.Instance.PlayerHP;
 
         if (swordHitbox != null) swordHitbox.SetActive(false);
     }

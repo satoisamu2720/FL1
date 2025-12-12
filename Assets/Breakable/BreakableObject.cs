@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BreakableObject : MonoBehaviour
@@ -11,6 +12,10 @@ public class BreakableObject : MonoBehaviour
     [Header("ハートのドロップ確率")]
     [Range(0f, 1f)]
     public float heartDropChance = 0.25f; // 25%でドロップ
+
+    [Header("レイヤーの設定")]
+    public int sortingOrder = 0;
+
 
     private bool isBroken = false;
 
@@ -39,10 +44,20 @@ public class BreakableObject : MonoBehaviour
 
     void TryDropHeart()
     {
-        float rand = Random.value; 
+        float rand = Random.value;
         if (rand < heartDropChance && heartPrefab != null)
         {
-            Instantiate(heartPrefab, transform.position, Quaternion.identity);
+            GameObject heart = Instantiate(heartPrefab, transform.position, Quaternion.identity);
+            ApplySorting(heart);
+        }
+    }
+
+    void ApplySorting(GameObject obj)
+    {
+        SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sortingOrder = sortingOrder;
         }
     }
 }

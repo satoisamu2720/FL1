@@ -128,19 +128,12 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
             TakeDamage(1);
         }
 
-        // �� �v���C���[�ɓ���������_���[�W�i���̏����j
-        if (other.CompareTag("Player"))
-        {
-            Player p = other.GetComponent<Player>();
-            if (p != null)
-                p.TakeDamage(1);
-        }
 
         Player player = other.GetComponent<Player>();
         if (player != null)
         {
             player.TakeDamage(1);
-            Destroy(gameObject);
+            
             return;
         }
     }
