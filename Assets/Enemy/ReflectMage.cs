@@ -4,23 +4,24 @@ public class ReflectMage : MonoBehaviour
 {
     [Header("Stats")]
     public int maxHP = 3;
-    private int currentHP;
+    int currentHP;
 
     [Header("Attack Settings")]
     public GameObject bulletPrefab;
     public float shootInterval = 3f;
     public float bulletSpeed = 10f;
-    private float shootTimer;
+    float shootTimer;
 
-    private Transform player;
-    private SpriteRenderer spriteRenderer;
-    private Color normalColor;
+    Transform player;
+    SpriteRenderer spriteRenderer;
+    Color normalColor;
 
     void Start()
     {
         player = GameObject.FindWithTag("Player")?.transform;
         spriteRenderer = GetComponent<SpriteRenderer>();
         normalColor = spriteRenderer.color;
+
         currentHP = maxHP;
         shootTimer = shootInterval;
     }
@@ -33,7 +34,7 @@ public class ReflectMage : MonoBehaviour
         Vector3 dir = player.position - transform.position;
         transform.localScale = new Vector3(Mathf.Sign(dir.x), 1, 1);
 
-        // 発射タイマー
+        // 発射
         shootTimer -= Time.deltaTime;
         if (shootTimer <= 0f)
         {
@@ -44,12 +45,15 @@ public class ReflectMage : MonoBehaviour
 
     void Shoot()
     {
-        GameObject bulletObj = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        GameObject bulletObj =
+            Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 
         MagicBullet bullet = bulletObj.GetComponent<MagicBullet>();
-        bullet.shooter = this;   // ★ 誰が撃ったかセット
+        bullet.shooter = this;
 
-        Vector2 direction = (player.position - transform.position).normalized;
+        Vector2 direction =
+            (player.position - transform.position).normalized;
+
         Rigidbody2D rb = bulletObj.GetComponent<Rigidbody2D>();
         rb.linearVelocity = direction * bulletSpeed;
 
@@ -59,8 +63,23 @@ public class ReflectMage : MonoBehaviour
         bulletObj.GetComponent<SpriteRenderer>().color = Color.red;
     }
 
+    // ▼ 反射された弾のみダメージ
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        MagicBullet bullet = other.GetComponent<MagicBullet>();
+        if (bullet == null) return;
 
-    public void TakeDamage(int dmg)
+        // ★ 未反射弾は完全無効
+        if (!bullet.IsReflected)
+        {
+            return;
+        }
+
+        TakeDamage(1);
+        Destroy(other.gameObject);
+    }
+
+    void TakeDamage(int dmg)
     {
         currentHP -= dmg;
         StartCoroutine(HitFlash());
