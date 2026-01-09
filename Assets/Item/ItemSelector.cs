@@ -15,12 +15,17 @@ public class ItemSelector : MonoBehaviour
 
     void Start()
     {
-        // スロットを取得
+        // スロット取得
         slots = new RectTransform[itemGrid.transform.childCount];
         for (int i = 0; i < slots.Length; i++)
         {
             slots[i] = itemGrid.transform.GetChild(i).GetComponent<RectTransform>();
         }
+
+        currentIndex = 0;
+
+        // UI レイアウトを強制更新
+        Canvas.ForceUpdateCanvases();
 
         UpdateCursor();
         // テキストUIを使わないので、UpdateItemInfo()は削除

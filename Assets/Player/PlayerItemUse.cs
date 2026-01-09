@@ -19,7 +19,7 @@ public class PlayerItemUse : MonoBehaviour
     {
 
         Inventory.Instance.AddItem(0); // Œ•
-        Inventory.Instance.AddItem(1); // ‹|
+        //Inventory.Instance.AddItem(1); // ‹|
 
         var item = Inventory.Instance.GetSelectedItem();
         if (item != null)
