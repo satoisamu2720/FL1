@@ -401,4 +401,19 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
         if (Instance == this)
             Instance = null;
     }
+
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        MagicBullet bullet = other.GetComponent<MagicBullet>();
+        if (bullet == null) return;
+
+        // š ”½Ë‚³‚ê‚½’e‚Í–³Œø
+        if (bullet.IsReflected)
+            return;
+
+        // š ’Êí‚Ì“G’e‚¾‚¯ƒ_ƒ[ƒW
+        TakeDamage(1);
+        Destroy(other.gameObject);
+    }
 }
