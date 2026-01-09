@@ -114,7 +114,7 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
 
         if (itemPrefab != null)
             Instantiate(itemPrefab, transform.position, Quaternion.identity);
-        MapManager.Instance.OpenDoorNum++;
+        
         Destroy(gameObject);
     }
 

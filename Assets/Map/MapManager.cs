@@ -1,34 +1,50 @@
 using UnityEngine;
+using static OpenDoor;
 
 public class MapManager : MonoBehaviour
 {
+    public enum RoomConditionType
+    {
+        Battle,
+        Gimmick
+    }
     public static MapManager Instance;
 
     public int currentMapID;
 
-    [Header("現在マップの条件達成数")]
-    public int OpenDoorNum = 0;
+    [Header("現在の条件数")]
+    public int currentCount = 0;
+
+    [Header("現在の条件タイプ")]
+    public RoomConditionType currentConditionType;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    // 敵やギミックから呼ぶ
-    public void AddOpenDoorNum(int value = 1)
+    // ===== 条件開始 =====
+    public void StartCondition(RoomConditionType type, int startCount = 0)
     {
-        OpenDoorNum += value;
-        Debug.Log($"条件達成 +{value} / 現在 {OpenDoorNum}");
+        currentConditionType = type;
+        currentCount = startCount;
     }
 
-    public void ResetMapCount()
+    // ===== カウント加算 =====
+    public void AddCount(int value = 1)
     {
-        OpenDoorNum = 0;
+        currentCount += value;
     }
 
-    public void MapTransition(int toMapID)
+    // ===== 敵撃破 =====
+    public void EnemyDefeated()
     {
-        currentMapID = toMapID;
-        ResetMapCount();
+        if (currentConditionType != RoomConditionType.Battle) return;
+        currentCount--;
+    }
+
+    public bool IsConditionCleared()
+    {
+        return currentCount <= 0;
     }
 }

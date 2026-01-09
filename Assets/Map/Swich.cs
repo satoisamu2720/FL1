@@ -23,7 +23,7 @@ public class Swich : MonoBehaviour
         if (collision.CompareTag("Player") && isStepOn == false)
         {
             isStepOn = true;
-            MapManager.Instance.OpenDoorNum ++;
+            
         }
     }
 

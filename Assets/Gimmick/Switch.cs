@@ -48,7 +48,7 @@ public class Switch : MonoBehaviour
             if (mechanism != null)
             {
                 mechanism.Activate();
-                MapManager.Instance.AddOpenDoorNum(1);
+                MapManager.Instance.AddCount(1);
             }
         }
     }

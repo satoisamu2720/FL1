@@ -1,64 +1,78 @@
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
-using static Switch;
+using static MapManager;
 
-public class OpenDoor : MonoBehaviour, IMechanism
+public class OpenDoor : MonoBehaviour
 {
-    [Header("開く向き")]
     public Vector3 openOffset = new Vector3(0, 0.5f, 0);
-
-    [Header("速度")]
     public float speed = 2f;
 
     public int mapID;
-    public int doorID;
 
-    [Header("この扉が開くために必要な数")]
+    [Header("条件")]
+    public RoomConditionType conditionType;
+
+    [Header("必要数（ギミック用）")]
     public int requiredCount = 1;
 
-
-    private bool opened = false;
+    private bool opened = true;
     private Vector3 closedPos;
     private Vector3 openPos;
 
     void Start()
     {
         closedPos = transform.position;
-        openPos = closedPos + openOffset; 
+        openPos = closedPos + openOffset;
+
+        Open(); // 初期は開いている
     }
 
-    public void Activate()
-    {
-        if (!opened)
-        {
-            opened = true;
-            StartCoroutine(OpenTheDoor());
-        }
-    }
     private void Update()
     {
-        if (opened) 
-        { 
-            return; 
+        if (MapManager.Instance.currentMapID != mapID) return;
+
+        // ===== 戦闘部屋 =====
+        if (conditionType == RoomConditionType.Battle)
+        {
+            if (MapManager.Instance.IsConditionCleared())
+            {
+                Open();
+            }
         }
 
-        if (MapManager.Instance.currentMapID != mapID)
+        // ===== ギミック部屋 =====
+        if (conditionType == RoomConditionType.Gimmick)
         {
-            return;
-        }
-
-        if (MapManager.Instance.OpenDoorNum >= requiredCount)
-        {
-            StartCoroutine(OpenTheDoor());
+            if (MapManager.Instance.currentCount >= requiredCount)
+            {
+                Open();
+            }
         }
     }
 
-
-    private System.Collections.IEnumerator OpenTheDoor()
+    public void Close()
     {
-        while (Vector3.Distance(transform.position, openPos) > 0.01f)
+        opened = false;
+        StopAllCoroutines();
+        StartCoroutine(MoveTo(closedPos));
+    }
+
+    public void Open()
+    {
+        if (opened) return;
+        opened = true;
+        StopAllCoroutines();
+        StartCoroutine(MoveTo(openPos));
+    }
+
+    System.Collections.IEnumerator MoveTo(Vector3 target)
+    {
+        while (Vector3.Distance(transform.position, target) > 0.01f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, openPos, Time.deltaTime * speed);
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                target,
+                Time.deltaTime * speed
+            );
             yield return null;
         }
     }

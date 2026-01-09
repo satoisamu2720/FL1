@@ -50,7 +50,6 @@ public class MapTransitionTrigger : MonoBehaviour
         // ƒ[ƒvæ‚ÉˆÚ“®
         Vector3 targetPos = playerTargetObject.transform.position;
         player.position = targetPos;
-        MapManager.Instance.MapTransition(currentMapID);
 
         // ‰Ÿ‚µo‚·•ûŒü‚ğ©“®”»’è
         Vector2 direction = (targetPos - beforePos).normalized;
