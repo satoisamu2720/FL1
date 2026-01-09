@@ -1573,8 +1573,13 @@ MonoBehaviour:
   defaultSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   mpRecoveryInterval: 1
   mpRecoveryDelay: 1.5
---- !u!58 &1168749273
-CircleCollider2D:
+--- !u!4 &1168749277 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7367624681414968511, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+  m_PrefabInstance: {fileID: 434294289751905039}
+  m_PrefabAsset: {fileID: 0}
+--- !u!70 &1168749281
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3025,6 +3030,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1848695409}
   m_CullTransparentMesh: 1
+--- !u!1 &1856129646 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4429435262401515305, guid: 5c954debf5345f7459f44c5042fedbd1, type: 3}
+  m_PrefabInstance: {fileID: 1122032188582942974}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1919069818 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6916857873213797941, guid: bcc038d9ed1da2c4aafc089e65c10cad, type: 3}
@@ -3217,6 +3227,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 197263891710555406, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 197263891710555406, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 1559859303570916718, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
       propertyPath: m_TagString
       value: Sword
@@ -3248,6 +3266,14 @@ PrefabInstance:
     - target: {fileID: 5964041075307047601, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
       propertyPath: m_SortingOrder
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367624681414968511, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367624681414968511, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 7367624681414968511, guid: 2d06445d76879924c86415b6d0cfb89b, type: 3}
       propertyPath: m_LocalPosition.x

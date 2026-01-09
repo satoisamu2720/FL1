@@ -78,7 +78,10 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 
         currentHP = Status.Instance.PlayerHP;
 
-        if (swordHitbox != null) swordHitbox.SetActive(false);
+        if (swordHitbox != null)
+        {
+            swordHitbox.SetActive(false);
+        }
     }
 
     void Update()
@@ -98,8 +101,14 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
         UpdateAnimation();
 
 #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.B)) TakeDamage(1);
-        if (Input.GetKeyDown(KeyCode.N)) RecoverHP(1);
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            TakeDamage(1);
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            RecoverHP(1);
+        }
 #endif
     }
 
@@ -248,11 +257,32 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
         swordHitbox.SetActive(false);
         attackState = AttackState.None;
     }
+    private void PushBlockCheck()
+    {
+        if (attackState != AttackState.None && attackState != AttackState.Charge)
+            return;
 
+        // movementが0でも、lastMoveDirを使う
+        Vector2 dir = movement != Vector2.zero ? movement : lastMoveDir;
+        if (dir == Vector2.zero) return;
 
-    // ================================
-    //           ★ HP関連 ★
-    // ================================
+        RaycastHit2D hit = Physics2D.Raycast(
+            rb.position,
+            dir,
+            0.6f,
+            LayerMask.GetMask("Block")
+        );
+
+        if (hit.collider != null)
+        {
+            PushBlock block = hit.collider.GetComponent<PushBlock>();
+            if (block != null)
+            {
+                block.TryPush(dir);
+            }
+        }
+    }
+
     private void HandleHPInvincible()
     {
         if (!isInvincible) return;
@@ -305,39 +335,6 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
         // ここでゲームオーバー画面とか
     }
 
-
-    void OnDestroy()
-    {
-        if (Instance == this)
-            Instance = null;
-    }
-
-    private void PushBlockCheck()
-    {
-        if (attackState != AttackState.None && attackState != AttackState.Charge)
-            return;
-
-        // movementが0でも、lastMoveDirを使う
-        Vector2 dir = movement != Vector2.zero ? movement : lastMoveDir;
-        if (dir == Vector2.zero) return;
-
-        RaycastHit2D hit = Physics2D.Raycast(
-            rb.position,
-            dir,
-            0.6f,
-            LayerMask.GetMask("Block")
-        );
-
-        if (hit.collider != null)
-        {
-            PushBlock block = hit.collider.GetComponent<PushBlock>();
-            if (block != null)
-            {
-                block.TryPush(dir);
-            }
-        }
-    }
-
     private void UpdateAnimation()
     {
         Vector2 dir = (movement != Vector2.zero) ? movement : lastMoveDir;
@@ -366,22 +363,22 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 
             if (t < walkAnimSpeed)
             {
-
+               
                 s = (dir.x > 0) ? rightWalk1 : leftWalk1;
             }
             else if (t < walkAnimSpeed * 2f)
             {
-
+               
                 s = (dir.x > 0) ? rightIdle : leftIdle;
             }
             else if (t < walkAnimSpeed * 3f)
             {
-
+                
                 s = (dir.x > 0) ? rightWalk2 : leftWalk2;
             }
             else
             {
-
+                
                 s = (dir.x > 0) ? rightIdle : leftIdle;
             }
 
@@ -398,4 +395,17 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
         sr.sprite = s;
     }
 
+
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+
+    void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
 }

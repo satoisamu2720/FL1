@@ -12,7 +12,11 @@ TagManager:
   - Chest
   - Sword
   - PlayerBullet
+  - Arrow
+  - Bomb
+  - Door
   - Wall
+  - Switch
   - Block
   - Ground
   layers:

@@ -15,7 +15,7 @@ public class Arrow : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Switch") || other.CompareTag("Wall"))
         {
             Debug.Log("“G‚É–½’†I");
             Destroy(gameObject);
