@@ -21,7 +21,7 @@ public class MapTransitionTrigger : MonoBehaviour
             return;
         }
 
-        if (other.CompareTag("Player") && MapManager.Instance.isOpenDoor == true)
+        if (other.CompareTag("Player"))
         {
             StartCoroutine(Transition(other.transform));
         }

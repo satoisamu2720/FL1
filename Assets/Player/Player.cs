@@ -62,13 +62,6 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     //private SpriteRenderer sprite;
     private Color originColor;
     private bool isDead = false;
-    // =================================
-
-
-    void Awake()
-    {
-        Instance = this;
-    }
 
     void Start()
     {
