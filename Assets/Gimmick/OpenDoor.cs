@@ -1,3 +1,4 @@
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using static Switch;
 
@@ -8,6 +9,13 @@ public class OpenDoor : MonoBehaviour, IMechanism
 
     [Header("速度")]
     public float speed = 2f;
+
+    public int mapID;
+    public int doorID;
+
+    [Header("この扉が開くために必要な数")]
+    public int requiredCount = 1;
+
 
     private bool opened = false;
     private Vector3 closedPos;
@@ -27,6 +35,24 @@ public class OpenDoor : MonoBehaviour, IMechanism
             StartCoroutine(OpenTheDoor());
         }
     }
+    private void Update()
+    {
+        if (opened) 
+        { 
+            return; 
+        }
+
+        if (MapManager.Instance.currentMapID != mapID)
+        {
+            return;
+        }
+
+        if (MapManager.Instance.OpenDoorNum >= requiredCount)
+        {
+            StartCoroutine(OpenTheDoor());
+        }
+    }
+
 
     private System.Collections.IEnumerator OpenTheDoor()
     {

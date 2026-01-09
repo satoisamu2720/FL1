@@ -209,11 +209,14 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         if (arrowInstance != null)
             Destroy(arrowInstance.gameObject);
 
-        MapManager.Instance.OpenDoorNum++;
+        OnDeath();
 
         Destroy(gameObject);
     }
-
+    void OnDeath()
+    {
+        MapManager.Instance.AddOpenDoorNum(1);
+    }
     // ===============================
     // ▼ 物理判定（剣 / プレイヤー）
     // ===============================

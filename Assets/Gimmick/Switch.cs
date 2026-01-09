@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Switch : MonoBehaviour
 {
+
+    public static Switch Instance;
+
     [Header("スイッチがオンのときに動かすオブジェクト")]
     public GameObject targetObject;
 
@@ -10,6 +13,12 @@ public class Switch : MonoBehaviour
 
     private bool isActivated = false;
 
+
+    private void Awake()
+    {
+        Instance = this;
+
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (isActivated && oneTime) 
@@ -39,6 +48,7 @@ public class Switch : MonoBehaviour
             if (mechanism != null)
             {
                 mechanism.Activate();
+                MapManager.Instance.AddOpenDoorNum(1);
             }
         }
     }
@@ -46,5 +56,8 @@ public class Switch : MonoBehaviour
     public interface IMechanism
     {
         void Activate();
+
     }
+
+    
 }

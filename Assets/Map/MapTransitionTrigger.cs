@@ -14,6 +14,8 @@ public class MapTransitionTrigger : MonoBehaviour
 
     private bool isTransitioning = false;
 
+    public int currentMapID = 0;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (isTransitioning)
@@ -48,6 +50,7 @@ public class MapTransitionTrigger : MonoBehaviour
         // ƒ[ƒvæ‚ÉˆÚ“®
         Vector3 targetPos = playerTargetObject.transform.position;
         player.position = targetPos;
+        MapManager.Instance.MapTransition(currentMapID);
 
         // ‰Ÿ‚µo‚·•ûŒü‚ğ©“®”»’è
         Vector2 direction = (targetPos - beforePos).normalized;
