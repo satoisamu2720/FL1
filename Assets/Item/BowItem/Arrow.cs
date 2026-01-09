@@ -1,12 +1,15 @@
 using UnityEngine;
 
-
-
 public class Arrow : MonoBehaviour
 {
     public float lifeTime = 3f;
-    public int damage = 1;
 
+    Rigidbody2D rb;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     void Start()
     {
@@ -15,14 +18,23 @@ public class Arrow : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // ▼ 魔法弾に当たったら「矢の方向にそのまま反射」
+        MagicBullet bullet = other.GetComponent<MagicBullet>();
+        if (bullet != null)
+        {
+            // ★ プレイヤーが撃った方向そのもの
+            Vector2 reflectDir = rb.linearVelocity.normalized;
+
+            bullet.Reflect(reflectDir);
+
+            Destroy(gameObject);
+            return;
+        }
+
+        // ▼ 通常の衝突
         if (other.CompareTag("Enemy") || other.CompareTag("Switch") || other.CompareTag("Wall"))
         {
-            Debug.Log("敵に命中！");
             Destroy(gameObject);
-            if (DivisionEnemy.Instance != null)
-            {
-                DivisionEnemy.Instance.Die();
-            }
         }
     }
 }
