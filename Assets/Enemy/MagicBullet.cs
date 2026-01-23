@@ -22,12 +22,14 @@ public class MagicBullet : MonoBehaviour
 
         rb.linearVelocity = reflectDir.normalized * speed;
 
-        gameObject.layer = LayerMask.NameToLayer("PlayerBullet");
+        int layer = LayerMask.NameToLayer("PlayerBullet");
+        if (layer != -1)
+            gameObject.layer = layer;
+        else
+            Debug.LogWarning("PlayerBullet layer not found!");
+
         gameObject.tag = "PlayerBullet";
-
         GetComponent<SpriteRenderer>().color = Color.cyan;
-
-        shooter = null;
     }
 
 }
