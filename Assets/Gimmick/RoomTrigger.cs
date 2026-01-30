@@ -3,14 +3,10 @@ using static MapManager;
 
 public class RoomTrigger : MonoBehaviour
 {
-    public RoomConditionType conditionType;
-
-    [Header("戦闘用")]
     public OpenDoor[] doors;
+    public RoomConditionType conditionType;
+    public int requiredCount;
     public GameObject[] enemies;
-
-    [Header("ギミック用")]
-    public int gimmickTargetCount = 1;
 
     private bool activated = false;
 
@@ -21,21 +17,21 @@ public class RoomTrigger : MonoBehaviour
 
         activated = true;
 
+        //まず必ず閉める
+        foreach (var door in doors)
+        {
+            door.Close();
+        }
+
+        // 条件開始
         if (conditionType == RoomConditionType.Battle)
         {
-            foreach (var door in doors)
-                door.Close();
-
-            foreach (var enemy in enemies)
-                enemy.SetActive(true);
-
             MapManager.Instance.StartCondition(
                 RoomConditionType.Battle,
                 enemies.Length
             );
         }
-
-        if (conditionType == RoomConditionType.Gimmick)
+        else
         {
             MapManager.Instance.StartCondition(
                 RoomConditionType.Gimmick,
@@ -44,3 +40,4 @@ public class RoomTrigger : MonoBehaviour
         }
     }
 }
+
