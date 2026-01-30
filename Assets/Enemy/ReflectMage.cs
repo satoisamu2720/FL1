@@ -86,8 +86,13 @@ public class ReflectMage : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            Destroy(gameObject);
+            OnDeath();
         }
+    }
+    void OnDeath()
+    {
+        MapManager.Instance.EnemyDefeated();
+        Destroy(gameObject);
     }
 
     System.Collections.IEnumerator HitFlash()
