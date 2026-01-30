@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1796172973027425637}
   m_Layer: 0
   m_Name: BulletEnemy
-  m_TagString: EnemyBullet
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -116,7 +116,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &115104201785177580
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -181,4 +181,4 @@ MonoBehaviour:
   bulletPrefab: {fileID: 8754621766251140444, guid: f81decd79bcd4394eaaf575482a93897, type: 3}
   shootInterval: 2
   itemPrefab: {fileID: 0}
-  invincibilityDuration: 2
+  invincibilityDuration: 5

@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06811479b7a4c7741837585dce4cd2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 3
+  maxHP: 5
   bulletPrefab: {fileID: 8208529654799736918, guid: 8f99bd373b45b9943be14550da9f5c1a, type: 3}
-  shootInterval: 3
-  bulletSpeed: 5
+  shootInterval: 1.5
+  bulletSpeed: 8

@@ -235,5 +235,16 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
             if (p != null)
                 p.TakeDamage(1);
         }
+
+        if(other.CompareTag("Arrow"))
+        {
+            TakeDamage(1);
+        }
+
+        if (other.CompareTag("Wall"))
+        {
+            state = State.Idle;
+            waitTimer = Random.Range(0.1f, 1.0f);
+        }
     }
 }

@@ -28,7 +28,8 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
     private Color originColor;
 
     private bool isDead = false;
-
+    private bool hitWall = false;
+    private Vector2 slideDirection;
     void Start()
     {
         player = GameObject.FindWithTag("Player")?.transform;
@@ -70,12 +71,24 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
     void MoveAwayFromPlayer()
     {
         float distance = Vector2.Distance(transform.position, player.position);
-        if (distance < minDistanceFromPlayer)
+        if (distance >= minDistanceFromPlayer) return;
+
+        Vector2 moveDir;
+
+        if (hitWall)
         {
-            Vector2 direction = (transform.position - player.position).normalized;
-            transform.position += (Vector3)direction * speed * Time.deltaTime;
+            // 壁に当たってる間は横移動
+            moveDir = slideDirection;
         }
+        else
+        {
+            // 通常はプレイヤーから逃げる
+            moveDir = (transform.position - player.position).normalized;
+        }
+
+        transform.position += (Vector3)moveDir * speed * Time.deltaTime;
     }
+
 
     public void TakeDamage(int damage)
     {
@@ -128,13 +141,40 @@ public class BulletEnemy : MonoBehaviour, ISwordDamageable
             TakeDamage(1);
         }
 
-
-        Player player = other.GetComponent<Player>();
-        if (player != null)
+        if(other.CompareTag("Arrow"))
         {
-            player.TakeDamage(1);
-            
-            return;
+            TakeDamage(1);
+        }
+
+        //Player p = other.GetComponent<Player>();
+        //if (player != null)
+        //{
+        //    p.TakeDamage(1);
+        //    if (p != null)
+        //        p.TakeDamage(1);
+        //}
+
+        if (other.CompareTag("Wall"))
+        {
+            hitWall = true;
+
+            //// プレイヤーから逃げる方向
+            //Vector2 awayDir = (transform.position - player.position).normalized;
+
+            //// 左右どちらかに90度回転
+            //if (Random.value < 0.5f)
+            //    slideDirection = new Vector2(-awayDir.y, awayDir.x); // 左
+            //else
+            //    slideDirection = new Vector2(awayDir.y, -awayDir.x); // 右
+        }
+
+
+    }
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Wall"))
+        {
+            hitWall = false;
         }
     }
 }
