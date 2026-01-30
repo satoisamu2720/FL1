@@ -43,6 +43,7 @@ public class ReflectMage : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     void Shoot()
     {
         GameObject bulletObj =
@@ -55,7 +56,8 @@ public class ReflectMage : MonoBehaviour
             (player.position - transform.position).normalized;
 
         Rigidbody2D rb = bulletObj.GetComponent<Rigidbody2D>();
-        rb.linearVelocity = direction * bulletSpeed;
+        rb.velocity = direction * bulletSpeed;
+
 
         bulletObj.tag = "MagicBullet";
         bulletObj.layer = LayerMask.NameToLayer("EnemyBullet");
