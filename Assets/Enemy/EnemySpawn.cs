@@ -79,9 +79,13 @@ public class EnemySpawn : MonoBehaviour
         }
     }
     // 手動で呼び出して敵をスポーンさせる
-    public void SpawnEnemiesManually()
+    public int SpawnEnemiesManually()
     {
+        spawnedEnemies.Clear();
+
         SpawnEnemies();
+
+        return spawnedEnemies.Count;
     }
 
     // 生成された敵のリストを取得

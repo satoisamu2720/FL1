@@ -72,6 +72,8 @@ public class MapTransitionTrigger : MonoBehaviour
         // ‰Ÿ‚µo‚·—Ê
         player.position += (Vector3)direction * playerPush;
 
+        MapManager.Instance.currentMapID = currentMapID;
+
         yield return new WaitForSeconds(transitionDelay);
 
         if (move != null)
