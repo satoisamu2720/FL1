@@ -2,28 +2,44 @@ using UnityEngine;
 
 public class Chest : MonoBehaviour
 {
-
     [Header("宝箱設定")]
-    public int chestID;          // 宝箱ID
-    public int itemIDToGive;    // 宝箱から出るアイテムID
-    public bool isOpened = false; // 宝箱が開いているかどうか
+    public int chestID;
+    public int itemIDToGive;
+    public bool isOpened = false;
 
+    [Header("見た目")]
+    public Sprite closedSprite;
+    public Sprite openedSprite;
 
+    private SpriteRenderer spriteRenderer;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        UpdateVisual();
     }
 
-    // Update is called once per frame
     public void OpenChest(Inventory inventory)
     {
-        if(isOpened) return;
+        if (isOpened) return;
+
+        if (inventory == null)
+        {
+            Debug.LogError("Inventory が null です");
+            return;
+        }
 
         isOpened = true;
-        Debug.Log("宝箱が開きました！ アイテムID: " + itemIDToGive);
-        inventory.AddItem(itemIDToGive); // プレイヤーのインベントリにアイテムを追加する処理をここに書く
+        UpdateVisual();
 
+        Debug.Log("宝箱が開きました！ アイテムID: " + itemIDToGive);
+        inventory.AddItem(itemIDToGive);
+    }
+
+    void UpdateVisual()
+    {
+        if (spriteRenderer == null) return;
+
+        spriteRenderer.sprite = isOpened ? openedSprite : closedSprite;
     }
 }
