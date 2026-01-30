@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Switch : MonoBehaviour
 {
-
     public static Switch Instance;
 
     [Header("スイッチがオンのときに動かすオブジェクト")]
@@ -11,22 +10,26 @@ public class Switch : MonoBehaviour
     [Header("スイッチ管理")]
     public bool oneTime = true;
 
-    private bool isActivated = false;
+    [Header("見た目")]
+    public Sprite offSprite;
+    public Sprite onSprite;
 
+    private bool isActivated = false;
+    private SpriteRenderer spriteRenderer;
 
     private void Awake()
     {
         Instance = this;
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
+        // 初期状態はOFF
+        SetVisual(false);
     }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isActivated && oneTime) 
-        { 
-            return; 
-        }
+        if (isActivated && oneTime) return;
 
-        // 攻撃オブジェクトタグ判定
         if (other.CompareTag("Sword") ||
             other.CompareTag("Arrow") ||
             other.CompareTag("Bomb"))
@@ -38,12 +41,12 @@ public class Switch : MonoBehaviour
     void ActivateSwitch()
     {
         isActivated = true;
+        SetVisual(true);
 
         Debug.Log("作動");
 
         if (targetObject != null)
         {
-            // ここで仕掛けのスクリプトを呼ぶ
             var mechanism = targetObject.GetComponent<IMechanism>();
             if (mechanism != null)
             {
@@ -53,11 +56,14 @@ public class Switch : MonoBehaviour
         }
     }
 
+    void SetVisual(bool on)
+    {
+        if (spriteRenderer == null) return;
+        spriteRenderer.sprite = on ? onSprite : offSprite;
+    }
+
     public interface IMechanism
     {
         void Activate();
-
     }
-
-    
 }

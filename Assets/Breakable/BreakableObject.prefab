@@ -77,12 +77,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 0.2830189, g: 0.012014948, b: 0.012014948, a: 1}
+  m_Sprite: {fileID: 4495992926927220236, guid: 1b738e807c2f11644aaaec2915c622a5, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.18, y: 1.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -103,3 +103,4 @@ MonoBehaviour:
   breakEffect: {fileID: 0}
   heartPrefab: {fileID: 0}
   heartDropChance: 0.25
+  sortingOrder: 0
