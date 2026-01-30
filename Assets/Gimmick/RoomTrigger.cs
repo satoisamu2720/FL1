@@ -4,9 +4,7 @@ using static MapManager;
 public class RoomTrigger : MonoBehaviour
 {
     public OpenDoor[] doors;
-    public RoomConditionType conditionType;
-    public int requiredCount;
-    public GameObject[] enemies;
+    public EnemySpawn enemySpawn;
 
     private bool activated = false;
 
@@ -17,27 +15,19 @@ public class RoomTrigger : MonoBehaviour
 
         activated = true;
 
-        //まず必ず閉める
+        //扉を閉める
         foreach (var door in doors)
         {
             door.Close();
         }
 
-        // 条件開始
-        if (conditionType == RoomConditionType.Battle)
-        {
-            MapManager.Instance.StartCondition(
-                RoomConditionType.Battle,
-                enemies.Length
-            );
-        }
-        else
-        {
-            MapManager.Instance.StartCondition(
-                RoomConditionType.Gimmick,
-                0
-            );
-        }
+        //敵をスポーン
+        int enemyCount = enemySpawn.SpawnEnemiesManually();
+
+        //戦闘開始
+        MapManager.Instance.StartCondition(
+           RoomConditionType.Battle,
+            enemyCount
+        );
     }
 }
-

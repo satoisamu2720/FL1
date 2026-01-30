@@ -16,7 +16,7 @@ public class PlayerInteraction : MonoBehaviour
     void Update()
     {
         // 宝箱と接触中で、Eキーが押されたら開く
-        if (chest != null && Input.GetKeyDown(KeyCode.E))
+        if (chest != null && Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.JoystickButton1))
         {
             Debug.Log("宝箱を開けた！");
             chest.OpenChest(inventory);
