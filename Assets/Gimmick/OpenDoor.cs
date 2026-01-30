@@ -14,7 +14,7 @@ public class OpenDoor : MonoBehaviour
     [Header("必要数（ギミック用）")]
     public int requiredCount = 1;
 
-    private bool opened = true;
+    private bool opened = false;
     private Vector3 closedPos;
     private Vector3 openPos;
 
@@ -28,9 +28,15 @@ public class OpenDoor : MonoBehaviour
 
     private void Update()
     {
-        if (MapManager.Instance.currentMapID != mapID) return;
+        if (opened) 
+        { 
+            return; 
+        }
+        if (MapManager.Instance.currentMapID != mapID) 
+        { 
+            return; 
+        }
 
-        // ===== 戦闘部屋 =====
         if (conditionType == RoomConditionType.Battle)
         {
             if (MapManager.Instance.IsConditionCleared())
@@ -39,7 +45,6 @@ public class OpenDoor : MonoBehaviour
             }
         }
 
-        // ===== ギミック部屋 =====
         if (conditionType == RoomConditionType.Gimmick)
         {
             if (MapManager.Instance.currentCount >= requiredCount)
@@ -47,10 +52,28 @@ public class OpenDoor : MonoBehaviour
                 Open();
             }
         }
+    
+
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            Debug.Log("OPEN");
+            Open();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log("CLOSE");
+            Close();
+        }
+#endif
     }
 
     public void Close()
     {
+        if (!opened) 
+        { 
+            return; 
+        }
         opened = false;
         StopAllCoroutines();
         StartCoroutine(MoveTo(closedPos));
@@ -58,7 +81,10 @@ public class OpenDoor : MonoBehaviour
 
     public void Open()
     {
-        if (opened) return;
+        if (opened)
+        {
+            return;
+        }
         opened = true;
         StopAllCoroutines();
         StartCoroutine(MoveTo(openPos));
