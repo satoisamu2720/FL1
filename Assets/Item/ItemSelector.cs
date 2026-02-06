@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,25 +16,44 @@ public class ItemSelector : MonoBehaviour
 
     void Start()
     {
-        // スロット取得
-        slots = new RectTransform[itemGrid.transform.childCount];
-        for (int i = 0; i < slots.Length; i++)
-        {
-            slots[i] = itemGrid.transform.GetChild(i).GetComponent<RectTransform>();
-        }
-
         currentIndex = 0;
-
-        // UI レイアウトを強制更新
         Canvas.ForceUpdateCanvases();
-
-        UpdateCursor();
-        // テキストUIを使わないので、UpdateItemInfo()は削除
+        RefreshSlots();
     }
 
     void Update()
     {
         HandleInput();
+    }
+
+    public void RefreshSlots()
+    {
+        List<RectTransform> list = new List<RectTransform>();
+
+        for (int i = 0; i < itemGrid.transform.childCount; i++)
+        {
+            Transform child = itemGrid.transform.GetChild(i);
+
+            // 非表示スロットは除外
+            if (!child.gameObject.activeSelf) continue;
+
+            list.Add(child.GetComponent<RectTransform>());
+        }
+
+        slots = list.ToArray();
+
+        if (slots.Length == 0)
+        {
+            cursor.gameObject.SetActive(false);
+            return;
+        }
+
+        cursor.gameObject.SetActive(true);
+
+        if (currentIndex >= slots.Length)
+            currentIndex = 0;
+
+        UpdateCursor();
     }
 
     void HandleInput()

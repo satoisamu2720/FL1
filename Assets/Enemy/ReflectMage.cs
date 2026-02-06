@@ -32,7 +32,7 @@ public class ReflectMage : MonoBehaviour
 
         // 向き変更
         Vector3 dir = player.position - transform.position;
-        transform.localScale = new Vector3(Mathf.Sign(dir.x), 1, 1);
+        //transform.localScale = new Vector3(Mathf.Sign(dir.x), 1, 1);
 
         // 発射
         shootTimer -= Time.deltaTime;

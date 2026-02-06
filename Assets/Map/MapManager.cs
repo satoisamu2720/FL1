@@ -40,8 +40,8 @@ public class MapManager : MonoBehaviour
     // ===== ƒ{ƒ^ƒ“‰Ÿ‰º =====
     public void PressButton()
     {
-        ButtonCount++;
         Debug.Log($"{ButtonCount}ŒÂ–Ú");
+        ButtonCount++;
     }
 
     // ===== ğŒ”»’è =====

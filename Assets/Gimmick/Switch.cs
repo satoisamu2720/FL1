@@ -45,15 +45,7 @@ public class Switch : MonoBehaviour
 
         Debug.Log("çÏìÆ");
 
-        if (targetObject != null)
-        {
-            var mechanism = targetObject.GetComponent<IMechanism>();
-            if (mechanism != null)
-            {
-                mechanism.Activate();
-                MapManager.Instance.PressButton();
-            }
-        }
+        MapManager.Instance.PressButton();
     }
 
     void SetVisual(bool on)
