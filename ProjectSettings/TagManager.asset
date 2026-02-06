@@ -27,11 +27,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - EnemyBullet
+  - PlayerBullet
   - Block
   - Ground
-  - 
+  - MagicBullet
   - 
   - 
   - 
