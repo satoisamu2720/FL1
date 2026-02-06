@@ -9,12 +9,16 @@ public class OpenDoor : MonoBehaviour
     public int mapID;
 
     [Header("条件")]
-    public RoomConditionType conditionType;
-
-    [Header("必要数（ギミック用）")]
+    public MapManager.RoomConditionType conditionType;
     public int requiredCount = 1;
 
-    private bool opened = false;
+    [Header("戦闘時")]
+    public bool closeOnBattleStart = true;
+
+    [Header("初期状態")]
+    public bool startOpened = false;
+
+    private bool opened;
     private Vector3 closedPos;
     private Vector3 openPos;
 
@@ -23,69 +27,46 @@ public class OpenDoor : MonoBehaviour
         closedPos = transform.position;
         openPos = closedPos + openOffset;
 
-        Open(); // 初期は開いている
-
+        if (startOpened)
+        {
+            opened = true;
+            transform.position = openPos;   // 即座に開いた位置
+        }
+        else
+        {
+            opened = false;
+            transform.position = closedPos;
+        }
     }
 
-    private void Update()
+    void Update()
     {
-        if (opened) 
-        { 
-            return; 
-        }
-        if (MapManager.Instance.currentMapID != mapID) 
-        { 
-            return; 
-        }
+        if (opened) return;
+        if (MapManager.Instance.currentMapID != mapID) return;
 
-        if (conditionType == RoomConditionType.Battle)
+        if (MapManager.Instance.CanOpen(conditionType, requiredCount))
         {
-            if (MapManager.Instance.IsConditionCleared())
-            {
-                Open();
-            }
-        }
-
-        if (conditionType == RoomConditionType.Gimmick)
-        {
-            if (MapManager.Instance.currentCount >= requiredCount)
-            {
-                Open();
-            }
-        }
-    
-
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            Debug.Log("OPEN");
             Open();
         }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Debug.Log("CLOSE");
-            Close();
-        }
-#endif
     }
 
+    public void CloseByBattle()
+    {
+        if (!closeOnBattleStart) return;
+        Close();
+    }
     public void Close()
     {
-        if (!opened) 
-        { 
-            return; 
-        }
+        if (!opened) return;
+
         opened = false;
         StopAllCoroutines();
         StartCoroutine(MoveTo(closedPos));
     }
-
     public void Open()
     {
-        if (opened)
-        {
-            return;
-        }
+        if (opened) return;
+
         opened = true;
         StopAllCoroutines();
         StartCoroutine(MoveTo(openPos));

@@ -12,7 +12,6 @@ public class ChestSpawnByBattle : MonoBehaviour
 
     void Start()
     {
-        // 最初は非表示
         chestObject.SetActive(false);
     }
 
@@ -23,9 +22,8 @@ public class ChestSpawnByBattle : MonoBehaviour
         // マップIDが違うなら無視
         if (MapManager.Instance.currentMapID != mapID) return;
 
-        // 戦闘条件がクリアされたら
-        if (MapManager.Instance.currentConditionType == MapManager.RoomConditionType.Battle
-            && MapManager.Instance.IsConditionCleared())
+        // 敵が全滅したら宝箱出現
+        if (MapManager.Instance.enemyRemaining <= 0)
         {
             SpawnChest();
         }

@@ -7,7 +7,7 @@ public class RoomTrigger : MonoBehaviour
     public EnemySpawn enemySpawn;
 
     private bool activated = false;
-
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (activated) return;
@@ -18,16 +18,13 @@ public class RoomTrigger : MonoBehaviour
         //扉を閉める
         foreach (var door in doors)
         {
-            door.Close();
+            door.CloseByBattle();
         }
 
         //敵をスポーン
         int enemyCount = enemySpawn.SpawnEnemiesManually();
 
         //戦闘開始
-        MapManager.Instance.StartCondition(
-           RoomConditionType.Battle,
-            enemyCount
-        );
+        MapManager.Instance.StartBattle(enemyCount);
     }
 }

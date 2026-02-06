@@ -51,7 +51,7 @@ public class Switch : MonoBehaviour
             if (mechanism != null)
             {
                 mechanism.Activate();
-                MapManager.Instance.AddCount(1);
+                MapManager.Instance.PressButton();
             }
         }
     }

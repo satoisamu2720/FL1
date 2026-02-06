@@ -1,50 +1,66 @@
 using UnityEngine;
-using static OpenDoor;
 
 public class MapManager : MonoBehaviour
 {
     public enum RoomConditionType
     {
         Battle,
-        Gimmick
+        Gimmick,
+        Boss,
+        BossGimmick,
     }
+
     public static MapManager Instance;
 
     public int currentMapID;
 
-    [Header("現在の条件数")]
-    public int currentCount = 0;
+    [Header("敵条件")]
+    public int enemyRemaining = 0;
 
-    [Header("現在の条件タイプ")]
-    public RoomConditionType currentConditionType;
+    [Header("ボタン条件")]
+    public int ButtonCount = 0;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    // ===== 条件開始 =====
-    public void StartCondition(RoomConditionType type, int startCount = 0)
+    // ===== 戦闘開始 =====
+    public void StartBattle(int enemyCount)
     {
-        currentConditionType = type;
-        currentCount = startCount;
-    }
-
-    // ===== カウント加算 =====
-    public void AddCount(int value = 1)
-    {
-        currentCount += value;
+        enemyRemaining = enemyCount;
     }
 
     // ===== 敵撃破 =====
     public void EnemyDefeated()
     {
-        if (currentConditionType != RoomConditionType.Battle) return;
-        currentCount--;
+        enemyRemaining--;
     }
 
-    public bool IsConditionCleared()
+    // ===== ボタン押下 =====
+    public void PressButton()
     {
-        return currentCount <= 0;
+        ButtonCount++;
+        Debug.Log($"{ButtonCount}個目");
+    }
+
+    // ===== 条件判定 =====
+    public bool CanOpen(RoomConditionType type, int requiredCount)
+    {
+        switch (type)
+        {
+            case RoomConditionType.Battle:
+                return enemyRemaining <= 0;
+
+            case RoomConditionType.Gimmick:
+                return ButtonCount >= requiredCount;
+
+            case RoomConditionType.Boss:
+                return enemyRemaining <= 0;
+
+            case RoomConditionType.BossGimmick:
+                return enemyRemaining <= 0 && ButtonCount >= requiredCount;
+        }
+        return false;
     }
 }
