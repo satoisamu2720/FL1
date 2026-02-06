@@ -48,7 +48,8 @@ public class EnemySpawn : MonoBehaviour
                     // EnemySpawnオブジェクトの位置を基準にした相対位置でスポーン
                     Vector3 spawnPos = transform.position + (Vector3)p;
                     GameObject enemyObj = Instantiate(data.enemyPrefab, spawnPos, data.rot);
-                    enemyObj.tag = "Boss";
+                    enemyObj.transform.localScale = data.enemyPrefab.transform.localScale;
+                    enemyObj.tag = "BossEnemy";
                     spawnedEnemies.Add(enemyObj);
                     enemyObj.SetActive(true);
                     // プレイヤーのTransformを取得
