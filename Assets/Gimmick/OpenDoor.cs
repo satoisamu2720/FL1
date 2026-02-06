@@ -24,6 +24,7 @@ public class OpenDoor : MonoBehaviour
         openPos = closedPos + openOffset;
 
         Open(); // ‰Šú‚ÍŠJ‚¢‚Ä‚¢‚é
+
     }
 
     private void Update()

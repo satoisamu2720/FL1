@@ -17,6 +17,10 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
     [Header("無敵設定")]
     [SerializeField] private float invincibilityDuration = 0.4f; // 点滅時間短め推奨
 
+    [Header("ノックバック設定")]
+    public float knockbackForce = 4f;   // ノックバックの強さ
+    public float knockbackDuration = 0.1f; // ノックバック時間
+
     private int currentHP;
     private Transform player;
     private Vector2 moveDirection;
@@ -41,6 +45,12 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
     private enum FacingDirection { Left, Right }
     private FacingDirection lastDirection = FacingDirection.Right;
 
+    // ノックバック用
+    private Vector2 knockbackDirection;
+    private float knockbackTimer = 0f;
+
+    private Rigidbody2D rb;
+
     void Start()
     {
         player = GameObject.FindWithTag("Player")?.transform;
@@ -50,6 +60,15 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         spriteRenderer = GetComponent<SpriteRenderer>();
         originColor = spriteRenderer.color;
         animator = GetComponent<Animator>();
+
+        // Rigidbody2D 取得 / 追加
+        rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0f;
+            rb.freezeRotation = true;
+        }
 
         if (arrowUIPrefab != null && GameObject.Find("Canvas") != null)
         {
@@ -82,6 +101,7 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
             if (player == null) return;
         }
 
+        HandleKnockback();   // ノックバック処理
         HandleStateMachine();
         HandleArrow();
         HandleInvincibility();
@@ -90,6 +110,9 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
 
     void HandleStateMachine()
     {
+        // ノックバック中は行動停止
+        if (knockbackTimer > 0f) return;
+
         if (state == State.Idle)
         {
             waitTimer -= Time.deltaTime;
@@ -103,7 +126,7 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         }
         else if (state == State.Rushing)
         {
-            transform.Translate(moveDirection * speed * Time.deltaTime);
+            rb.MovePosition(rb.position + moveDirection * speed * Time.deltaTime);
             float traveled = Vector2.Distance(startPosition, transform.position);
             rushTimer -= Time.deltaTime;
 
@@ -161,15 +184,24 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
     // ===============================
     // ▼ ダメージ処理（剣もここに統合）
     // ===============================
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2 sourcePosition)
     {
         if (isDead || isInvincible) return;
 
         currentHP -= damage;
         StartInvincibility();
 
+        // ノックバック方向を計算
+        knockbackDirection = ((Vector2)transform.position - sourcePosition).normalized;
+        knockbackTimer = knockbackDuration;
+
         if (currentHP <= 0)
             Die();
+    }
+
+    public void TakeDamage(int damage)
+    {
+        TakeDamage(damage, player != null ? (Vector2)player.position : (Vector2)transform.position);
     }
 
     void StartInvincibility()
@@ -195,6 +227,25 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         }
     }
 
+    void HandleKnockback()
+    {
+        if (knockbackTimer > 0f)
+        {
+            Vector2 targetPos = rb.position + knockbackDirection * knockbackForce * Time.deltaTime;
+
+            // 壁判定（Wallレイヤー）
+            RaycastHit2D hit = Physics2D.Raycast(rb.position, knockbackDirection, knockbackForce * Time.deltaTime, LayerMask.GetMask("Wall"));
+            if (hit.collider != null)
+            {
+                knockbackTimer = 0f; // 衝突で止める
+                return;
+            }
+
+            rb.MovePosition(targetPos);
+            knockbackTimer -= Time.deltaTime;
+        }
+    }
+
     // ===============================
     // ▼ 死亡処理
     // ===============================
@@ -216,18 +267,17 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         MapManager.Instance.EnemyDefeated();
         Destroy(gameObject);
     }
+
     // ===============================
     // ▼ 物理判定（剣 / プレイヤー）
     // ===============================
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ▼ 剣に当たったらダメージ
         if (other.CompareTag("Sword"))
         {
-            TakeDamage(1);
+            TakeDamage(1, other.transform.position);
         }
 
-        // ▼ プレイヤーに当たったらダメージ（元の処理）
         if (other.CompareTag("Player"))
         {
             Player p = other.GetComponent<Player>();

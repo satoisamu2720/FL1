@@ -69,15 +69,17 @@ public class ReflectMage : MonoBehaviour
         MagicBullet bullet = other.GetComponent<MagicBullet>();
         if (bullet == null) return;
 
-        // ★ 未反射弾は完全無効
-        if (!bullet.IsReflected)
-        {
-            return;
-        }
+        // 未反射弾は無効
+        if (!bullet.IsReflected) return;
 
+        // ▼ ダメージを受ける
         TakeDamage(1);
-        Destroy(other.gameObject);
+
+        // ▼ 弾は消す
+        Destroy(bullet.gameObject);
     }
+
+
 
     void TakeDamage(int dmg)
     {
