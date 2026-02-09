@@ -18,8 +18,7 @@ public class ItemSlot : MonoBehaviour
 
         bool hasItem = Inventory.Instance.GetOwnedIDs().Contains(itemID);
 
-        gameObject.SetActive(hasItem);
-
+        icon.enabled = hasItem;
     }
 
     public void OnSelectItem()

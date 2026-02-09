@@ -32,26 +32,15 @@ public class ItemSelector : MonoBehaviour
 
         for (int i = 0; i < itemGrid.transform.childCount; i++)
         {
-            Transform child = itemGrid.transform.GetChild(i);
+            RectTransform rt = itemGrid.transform
+                .GetChild(i)
+                .GetComponent<RectTransform>();
 
-            // 非表示スロットは除外
-            if (!child.gameObject.activeSelf) continue;
-
-            list.Add(child.GetComponent<RectTransform>());
+            list.Add(rt);
         }
 
         slots = list.ToArray();
-
-        if (slots.Length == 0)
-        {
-            cursor.gameObject.SetActive(false);
-            return;
-        }
-
-        cursor.gameObject.SetActive(true);
-
-        if (currentIndex >= slots.Length)
-            currentIndex = 0;
+        currentIndex = Mathf.Clamp(currentIndex, 0, slots.Length - 1);
 
         UpdateCursor();
     }
