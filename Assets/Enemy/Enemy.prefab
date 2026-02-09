@@ -179,11 +179,11 @@ MonoBehaviour:
   speed: 8
   rushDistance: 1
   startImmediate: 0
-  maxHP: 7
+  maxHP: 2
   itemPrefab: {fileID: 0}
   arrowUIPrefab: {fileID: 0}
   invincibilityDuration: 2
-  knockbackForce: 12
+  knockbackForce: 6
   knockbackDuration: 0.5
 --- !u!61 &-3157558361426318734
 BoxCollider2D:
