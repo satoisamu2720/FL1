@@ -74,7 +74,11 @@ public class OpenDoor : MonoBehaviour
         opened = true;
         StopAllCoroutines();
         StartCoroutine(MoveTo(openPos));
-        audioSource.Play();
+        if (audioSource != null)
+        {
+
+            audioSource.Play();
+        }
     }
 
     System.Collections.IEnumerator MoveTo(Vector3 target)
