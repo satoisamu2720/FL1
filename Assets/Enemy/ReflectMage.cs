@@ -16,6 +16,12 @@ public class ReflectMage : MonoBehaviour
     SpriteRenderer spriteRenderer;
     Color normalColor;
 
+    [Header("SE")]
+    public AudioClip damageSE;
+    public AudioClip deathSE;
+    public AudioClip shootSE;
+    AudioSource audioSource;
+
     void Start()
     {
         player = GameObject.FindWithTag("Player")?.transform;
@@ -24,6 +30,10 @@ public class ReflectMage : MonoBehaviour
 
         currentHP = maxHP;
         shootTimer = shootInterval;
+
+        audioSource = GetComponent<AudioSource>();
+
+
     }
 
     void Update()
@@ -45,6 +55,13 @@ public class ReflectMage : MonoBehaviour
 
     void Shoot()
     {
+
+        if (shootSE != null)
+        {
+            audioSource.PlayOneShot(shootSE);
+        }
+
+
         GameObject bulletObj =
             Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 
@@ -83,6 +100,11 @@ public class ReflectMage : MonoBehaviour
 
     void TakeDamage(int dmg)
     {
+
+        if (damageSE != null)
+            audioSource.PlayOneShot(damageSE);
+
+
         currentHP -= dmg;
         StartCoroutine(HitFlash());
 
@@ -93,6 +115,11 @@ public class ReflectMage : MonoBehaviour
     }
     void OnDeath()
     {
+
+        if (deathSE != null)
+            AudioSource.PlayClipAtPoint(deathSE, transform.position);
+
+
         MapManager.Instance.EnemyDefeated();
         Destroy(gameObject);
     }

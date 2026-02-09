@@ -42,15 +42,12 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 
     private SpriteRenderer sr;
     private float walkAnimTimer = 0f;
-    public float walkAnimSpeed = 0.15f; // 歩きアニメの速度
+    public float walkAnimSpeed = 0.15f; 
 
     private enum AttackState { None, Swing, Charge, Spin }
     private AttackState attackState = AttackState.None;
     private float attackHoldTime = 0f;
 
-    // =================================
-    //        ★★ HP / ダメージ ★★
-    // =================================
     [Header("HP パラメータ")]
     public int maxHP = 5;
     public int currentHP;
@@ -66,7 +63,9 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 
     // SE
     public AudioClip swingSE;
+    public AudioClip damageSE;
     AudioSource audioSource;
+
 
 
     void Start()
@@ -89,7 +88,7 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     {
         if (isDead) return;
 
-        HandleHPInvincible();  // ← 無敵時間制御
+        HandleHPInvincible();  // 無敵時間制御
 
         if (GameManager.Instance != null && !GameManager.Instance.isPause)
         {
@@ -130,12 +129,12 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
             {
                 case AttackState.None:
                     MovePlayer(Status.Instance.PlayerSpeed);
-                    PushBlockCheck();  // ★ここ追加
+                    PushBlockCheck();
                     break;
 
                 case AttackState.Charge:
                     MovePlayer(Status.Instance.PlayerSpeed * 0.4f);
-                    PushBlockCheck();  // ★チャージ中も押せる
+                    PushBlockCheck();
                     break;
             }
         }
@@ -147,9 +146,7 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     }
 
 
-    // ================================
-    //           攻撃処理
-    // ================================
+    // 攻撃処理
     private void HandleAttackInput()
     {
         if (Input.GetButtonDown("Fire1") && attackState == AttackState.None)
@@ -307,6 +304,8 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     {
         if (isInvincible || isDead) return;
 
+        audioSource.PlayOneShot(damageSE);
+
         Status.Instance.TakeDamage(dmg);
 
         currentHP -= dmg;
@@ -366,22 +365,22 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
 
             if (t < walkAnimSpeed)
             {
-               
+
                 s = (dir.x > 0) ? rightWalk1 : leftWalk1;
             }
             else if (t < walkAnimSpeed * 2f)
             {
-               
+
                 s = (dir.x > 0) ? rightIdle : leftIdle;
             }
             else if (t < walkAnimSpeed * 3f)
             {
-                
+
                 s = (dir.x > 0) ? rightWalk2 : leftWalk2;
             }
             else
             {
-                
+
                 s = (dir.x > 0) ? rightIdle : leftIdle;
             }
 
