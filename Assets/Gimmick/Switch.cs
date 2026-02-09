@@ -17,6 +17,13 @@ public class Switch : MonoBehaviour
     private bool isActivated = false;
     private SpriteRenderer spriteRenderer;
 
+    private AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     private void Awake()
     {
         Instance = this;
@@ -46,6 +53,8 @@ public class Switch : MonoBehaviour
         Debug.Log("çÏìÆ");
 
         MapManager.Instance.PressButton();
+
+        audioSource.Play();
     }
 
     void SetVisual(bool on)

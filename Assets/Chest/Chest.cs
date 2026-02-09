@@ -13,6 +13,13 @@ public class Chest : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
+    private AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -34,6 +41,8 @@ public class Chest : MonoBehaviour
 
         Debug.Log("宝箱が開きました！ アイテムID: " + itemIDToGive);
         inventory.AddItem(itemIDToGive);
+
+        audioSource.Play();
     }
 
     void UpdateVisual()
