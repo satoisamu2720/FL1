@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8408999022250456919}
   - component: {fileID: 4925945289340673079}
   - component: {fileID: 2047206956216605788}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: MagicBullet
   m_TagString: MagicBullet
   m_Icon: {fileID: 0}
@@ -149,7 +149,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shooter: {fileID: 7771056738496155657, guid: 9dcd1018747dfac4abc3e75edfebf1ac, type: 3}
-  speed: 10
+  rb: {fileID: 0}
+  sr: {fileID: 0}
+  remainingReflections: 3
+  speedIncreasePerReflect: 3
 --- !u!50 &2047206956216605788
 Rigidbody2D:
   serializedVersion: 5

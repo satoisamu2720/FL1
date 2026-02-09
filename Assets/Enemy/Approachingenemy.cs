@@ -3,186 +3,162 @@ using UnityEngine.UI;
 
 public class Approachingenemy : MonoBehaviour, ISwordDamageable
 {
-    [Header("s“®ƒpƒ‰ƒ[ƒ^")]
+    [Header("è¡Œå‹•ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿")]
     public float speed = 3f;
     public float rushDistance = 1.5f;
-    public float waitTime = 1.5f;
     public bool startImmediate = false;
 
-    [Header("“GƒXƒe[ƒ^ƒX")]
+    [Header("æ•µã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹")]
     public int maxHP = 2;
     public GameObject itemPrefab;
     public GameObject arrowUIPrefab;
 
-    [Header("–³“Gİ’è")]
-    [SerializeField] private float invincibilityDuration = 0.4f; // “_–ÅŠÔ’Z‚ß„§
+    [Header("ç„¡æ•µè¨­å®š")]
+    [SerializeField] private float invincibilityDuration = 0.4f;
 
-    [Header("ƒmƒbƒNƒoƒbƒNİ’è")]
-    public float knockbackForce = 4f;   // ƒmƒbƒNƒoƒbƒN‚Ì‹­‚³
-    public float knockbackDuration = 0.1f; // ƒmƒbƒNƒoƒbƒNŠÔ
+    [Header("ãƒãƒƒã‚¯ãƒãƒƒã‚¯è¨­å®š")]
+    public float knockbackForce = 4f;
+    public float knockbackDuration = 0.1f;
 
     private int currentHP;
     private Transform player;
-    private Vector2 moveDirection;
-    private Vector2 startPosition;
-    private float waitTimer = 0f;
 
     private enum State { Idle, Rushing }
     private State state = State.Idle;
-    private Camera mainCamera;
-    private RectTransform arrowInstance;
 
-    private bool isInvincible = false;
-    private float invincibilityTimer = 0f;
-    private bool isDead = false;
-    private float rushTimer = 0f;
-    private float randomChoice;
+    private Vector2 moveDirection;
+    private Vector2 startPosition;
+    private float waitTimer;
+    private float rushTimer;
 
+    private bool isDead;
+    private bool isInvincible;
+    private float invincibilityTimer;
+
+    private Vector2 knockbackDirection;
+    private float knockbackTimer;
+
+    private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Color originColor;
     private Animator animator;
 
-    private enum FacingDirection { Left, Right }
-    private FacingDirection lastDirection = FacingDirection.Right;
+    private Camera mainCamera;
+    private RectTransform arrowInstance;
 
-    // ƒmƒbƒNƒoƒbƒN—p
-    private Vector2 knockbackDirection;
-    private float knockbackTimer = 0f;
-
-    private Rigidbody2D rb;
-
+    // ===============================
+    // åˆæœŸåŒ–
+    // ===============================
     void Start()
     {
         player = GameObject.FindWithTag("Player")?.transform;
         currentHP = maxHP;
 
-        mainCamera = Camera.main;
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
+
         spriteRenderer = GetComponent<SpriteRenderer>();
         originColor = spriteRenderer.color;
         animator = GetComponent<Animator>();
 
-        // Rigidbody2D æ“¾ / ’Ç‰Á
-        rb = GetComponent<Rigidbody2D>();
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0f;
-            rb.freezeRotation = true;
-        }
+        mainCamera = Camera.main;
 
         if (arrowUIPrefab != null && GameObject.Find("Canvas") != null)
         {
-            GameObject arrowObj = Instantiate(arrowUIPrefab, GameObject.Find("Canvas").transform);
-            arrowInstance = arrowObj.GetComponent<RectTransform>();
+            arrowInstance = Instantiate(
+                arrowUIPrefab,
+                GameObject.Find("Canvas").transform
+            ).GetComponent<RectTransform>();
         }
 
-        randomChoice = Random.Range(0.1f, 1.0f);
+        waitTimer = Random.Range(0.2f, 1f);
 
-        if (startImmediate)
+        if (startImmediate && player != null)
         {
-            moveDirection = (player != null ? (player.position - transform.position).normalized : Vector2.down);
+            moveDirection = (player.position - transform.position).normalized;
             startPosition = transform.position;
             state = State.Rushing;
             rushTimer = 1f;
         }
-        else
-        {
-            waitTimer = randomChoice;
-        }
     }
 
+    // ===============================
+    // è¦‹ãŸç›®ãƒ»UIã®ã¿
+    // ===============================
     void Update()
     {
         if (isDead) return;
 
-        if (player == null)
-        {
-            player = GameObject.FindWithTag("Player")?.transform;
-            if (player == null) return;
-        }
-
-        HandleKnockback();   // ƒmƒbƒNƒoƒbƒNˆ—
-        HandleStateMachine();
         HandleArrow();
         HandleInvincibility();
-        UpdateAnimation();
     }
 
+    // ===============================
+    // ç‰©ç†å‡¦ç†å°‚ç”¨
+    // ===============================
+    void FixedUpdate()
+    {
+        if (isDead) return;
+
+        HandleKnockback();
+        HandleStateMachine();
+    }
+
+    // ===============================
+    // è¡Œå‹•åˆ¶å¾¡ï¼ˆvelocityã®ã¿ï¼‰
+    // ===============================
     void HandleStateMachine()
     {
-        // ƒmƒbƒNƒoƒbƒN’†‚Ís“®’â~
-        if (knockbackTimer > 0f) return;
+        if (knockbackTimer > 0f)
+            return;
 
         if (state == State.Idle)
         {
-            waitTimer -= Time.deltaTime;
-            if (waitTimer <= 0f)
+            rb.linearVelocity = Vector2.zero;
+            waitTimer -= Time.fixedDeltaTime;
+
+            if (waitTimer <= 0f && player != null)
             {
                 moveDirection = (player.position - transform.position).normalized;
                 startPosition = transform.position;
-                state = State.Rushing;
                 rushTimer = 1f;
+                state = State.Rushing;
             }
         }
         else if (state == State.Rushing)
         {
-            rb.MovePosition(rb.position + moveDirection * speed * Time.deltaTime);
-            float traveled = Vector2.Distance(startPosition, transform.position);
-            rushTimer -= Time.deltaTime;
+            rb.linearVelocity = moveDirection * speed;
+            rushTimer -= Time.fixedDeltaTime;
 
+            float traveled = Vector2.Distance(startPosition, rb.position);
             if (traveled >= rushDistance || rushTimer <= 0f)
             {
-                randomChoice = Random.Range(0.1f, 1.0f);
-                waitTimer = randomChoice;
+                waitTimer = Random.Range(0.2f, 1f);
                 state = State.Idle;
             }
         }
     }
 
-    void HandleArrow()
+    // ===============================
+    // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ï¼ˆå£ã¯Collisionã§æ­¢ã‚ã‚‹ï¼‰
+    // ===============================
+    void HandleKnockback()
     {
-        if (arrowInstance == null || mainCamera == null || isDead) return;
-
-        Vector3 viewportPos = mainCamera.WorldToViewportPoint(transform.position);
-        bool isOffScreen =
-            viewportPos.x < 0f || viewportPos.x > 1f ||
-            viewportPos.y < 0f || viewportPos.y > 1f || viewportPos.z < 0f;
-
-        arrowInstance.gameObject.SetActive(isOffScreen);
-
-        if (isOffScreen)
+        if (knockbackTimer > 0f)
         {
-            Vector3 dir = (transform.position - player.position).normalized;
-            Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
+            rb.linearVelocity = knockbackDirection * knockbackForce;
+            knockbackTimer -= Time.fixedDeltaTime;
 
-            Vector3 screenPos = screenCenter + new Vector3(dir.x, dir.y, 0) * 150f;
-            screenPos.x = Mathf.Clamp(screenPos.x, 30f, Screen.width - 30f);
-            screenPos.y = Mathf.Clamp(screenPos.y, 30f, Screen.height - 30f);
-
-            arrowInstance.position = screenPos;
-
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            arrowInstance.rotation = Quaternion.Euler(0, 0, angle - 90f);
-        }
-    }
-
-    void UpdateAnimation()
-    {
-        if (animator == null || isDead) return;
-
-        if (state == State.Rushing)
-        {
-            if (moveDirection.x > 0) animator.Play("zombie_Right");
-            else animator.Play("zombie_Left");
-        }
-        else
-        {
-            animator.Play(lastDirection == FacingDirection.Right ? "zombie_Right" : "zombie_Left");
+            if (knockbackTimer <= 0f)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
         }
     }
 
     // ===============================
-    // ¥ ƒ_ƒ[ƒWˆ—iŒ•‚à‚±‚±‚É“‡j
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸
     // ===============================
     public void TakeDamage(int damage, Vector2 sourcePosition)
     {
@@ -191,8 +167,8 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         currentHP -= damage;
         StartInvincibility();
 
-        // ƒmƒbƒNƒoƒbƒN•ûŒü‚ğŒvZ
-        knockbackDirection = ((Vector2)transform.position - sourcePosition).normalized;
+        knockbackDirection =
+            ((Vector2)transform.position - sourcePosition).normalized;
         knockbackTimer = knockbackDuration;
 
         if (currentHP <= 0)
@@ -201,7 +177,9 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
 
     public void TakeDamage(int damage)
     {
-        TakeDamage(damage, player != null ? (Vector2)player.position : (Vector2)transform.position);
+        TakeDamage(damage, player != null
+            ? (Vector2)player.position
+            : (Vector2)transform.position);
     }
 
     void StartInvincibility()
@@ -215,10 +193,8 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         if (!isInvincible) return;
 
         invincibilityTimer -= Time.deltaTime;
-
-        // “_–ÅiÔ / ”¼“§–¾j
-        float alpha = Mathf.PingPong(Time.time * 20f, 1f);
-        spriteRenderer.color = new Color(1f, 0f, 0f, alpha);
+        float a = Mathf.PingPong(Time.time * 20f, 1f);
+        spriteRenderer.color = new Color(1f, 0f, 0f, a);
 
         if (invincibilityTimer <= 0f)
         {
@@ -227,49 +203,20 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
         }
     }
 
-    void HandleKnockback()
+    // ===============================
+    // å£åˆ¤å®šï¼ˆTagã®ã¿ï¼‰
+    // ===============================
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (knockbackTimer > 0f)
+        if (collision.collider.CompareTag("Wall"))
         {
-            Vector2 targetPos = rb.position + knockbackDirection * knockbackForce * Time.deltaTime;
-
-            // •Ç”»’èiWallƒŒƒCƒ„[j
-            RaycastHit2D hit = Physics2D.Raycast(rb.position, knockbackDirection, knockbackForce * Time.deltaTime, LayerMask.GetMask("Wall"));
-            if (hit.collider != null)
-            {
-                knockbackTimer = 0f; // Õ“Ë‚Å~‚ß‚é
-                return;
-            }
-
-            rb.MovePosition(targetPos);
-            knockbackTimer -= Time.deltaTime;
+            knockbackTimer = 0f;
+            rb.linearVelocity = Vector2.zero;
         }
     }
 
     // ===============================
-    // ¥ €–Sˆ—
-    // ===============================
-    public void Die()
-    {
-        if (isDead) return;
-        isDead = true;
-
-        if (itemPrefab != null)
-            Instantiate(itemPrefab, transform.position, Quaternion.identity);
-
-        if (arrowInstance != null)
-            Destroy(arrowInstance.gameObject);
-
-        OnDeath();
-    }
-    void OnDeath()
-    {
-        MapManager.Instance.EnemyDefeated();
-        Destroy(gameObject);
-    }
-
-    // ===============================
-    // ¥ •¨—”»’èiŒ• / ƒvƒŒƒCƒ„[j
+    // å‰£ãƒ»ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ï¼ˆTriggerï¼‰
     // ===============================
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -284,5 +231,49 @@ public class Approachingenemy : MonoBehaviour, ISwordDamageable
             if (p != null)
                 p.TakeDamage(1);
         }
+    }
+
+    // ===============================
+    // UIçŸ¢å°
+    // ===============================
+    void HandleArrow()
+    {
+        if (arrowInstance == null || mainCamera == null) return;
+
+        Vector3 vp = mainCamera.WorldToViewportPoint(transform.position);
+        bool off =
+            vp.x < 0 || vp.x > 1 ||
+            vp.y < 0 || vp.y > 1 || vp.z < 0;
+
+        arrowInstance.gameObject.SetActive(off);
+        if (!off || player == null) return;
+
+        Vector3 dir = (transform.position - player.position).normalized;
+        Vector3 center = new Vector3(Screen.width / 2f, Screen.height / 2f);
+        Vector3 pos = center + dir * 150f;
+
+        pos.x = Mathf.Clamp(pos.x, 30, Screen.width - 30);
+        pos.y = Mathf.Clamp(pos.y, 30, Screen.height - 30);
+
+        arrowInstance.position = pos;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        arrowInstance.rotation = Quaternion.Euler(0, 0, angle - 90f);
+    }
+
+    // ===============================
+    // æ­»äº¡
+    // ===============================
+    void Die()
+    {
+        isDead = true;
+
+        if (itemPrefab != null)
+            Instantiate(itemPrefab, transform.position, Quaternion.identity);
+
+        if (arrowInstance != null)
+            Destroy(arrowInstance.gameObject);
+
+        MapManager.Instance.EnemyDefeated();
+        Destroy(gameObject);
     }
 }
