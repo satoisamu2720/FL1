@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 39fd23a8d52c2cb4185e621878a34b17
+guid: 2f7209710f52a0241af0bdf1eb5aa5a8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1865952339040183261
-    second: Bullet1_0
+      213: 3495110376698640015
+    second: haikei_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bullet1_0
+      name: haikei_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 15
-        width: 52
-        height: 34
+        x: 0
+        y: 0
+        width: 1280
+        height: 720
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dd3ac4024c135e910800000000000000
-      internalID: 1865952339040183261
+      spriteID: f8677e5ae50218030800000000000000
+      internalID: 3495110376698640015
       vertices: []
       indices: 
       edges: []
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Bullet1_0: 1865952339040183261
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
