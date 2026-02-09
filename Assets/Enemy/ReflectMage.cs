@@ -16,6 +16,13 @@ public class ReflectMage : MonoBehaviour
     SpriteRenderer spriteRenderer;
     Color normalColor;
 
+    [Header("SE")]
+    public AudioClip damageSE;
+    public AudioClip deathSE;
+    public AudioClip shootSE;
+    AudioSource audioSource;
+
+
     void Start()
     {
         player = GameObject.FindWithTag("Player")?.transform;
@@ -24,6 +31,10 @@ public class ReflectMage : MonoBehaviour
 
         currentHP = maxHP;
         shootTimer = shootInterval;
+
+        audioSource = GetComponent<AudioSource>();
+        audioSource.volume = 1.0f;
+
     }
 
     void Update()
@@ -45,50 +56,56 @@ public class ReflectMage : MonoBehaviour
 
     void Shoot()
     {
-        GameObject bulletObj = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+
+        if (shootSE != null)
+        {
+            audioSource.PlayOneShot(shootSE);
+        }
+
+
+        GameObject bulletObj =
+            Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+
         MagicBullet bullet = bulletObj.GetComponent<MagicBullet>();
         bullet.shooter = this;
 
-        Vector2 direction = (player.position - transform.position).normalized;
-
-        // 反射回数ランダム 1～3
-        int reflections = Random.Range(1, 4);
+        Vector2 direction =
+            (player.position - transform.position).normalized;
 
         Rigidbody2D rb = bulletObj.GetComponent<Rigidbody2D>();
         rb.linearVelocity = direction * bulletSpeed;
 
-        bullet.Initialize(direction, reflections, bulletSpeed);
-
         bulletObj.tag = "MagicBullet";
         bulletObj.layer = LayerMask.NameToLayer("EnemyBullet");
 
-        // 敵弾は赤固定
-        bullet.sr.color = Color.red;
+        bulletObj.GetComponent<SpriteRenderer>().color = Color.red;
     }
 
-
-    // 弾を反射する＆反射された弾だけダメージを受ける
-    private void OnTriggerEnter2D(Collider2D other)
+    // ▼ 反射された弾のみダメージ
+    void OnTriggerEnter2D(Collider2D other)
     {
         MagicBullet bullet = other.GetComponent<MagicBullet>();
         if (bullet == null) return;
 
-        // 弾がまだ反射されていなくて残り反射回数がある場合 → 跳ね返す
-        if (!bullet.IsReflected && bullet.remainingReflections > 0)
-        {
-            Vector2 reflectDir = ((Vector2)other.transform.position - (Vector2)transform.position).normalized;
-            bullet.Reflect(reflectDir);
-        }
-        // すでに反射された弾 → ダメージ
-        else if (bullet.IsReflected)
-        {
-            TakeDamage(1);
-            Destroy(bullet.gameObject);
-        }
+        // 未反射弾は無効
+        if (!bullet.IsReflected) return;
+
+        // ▼ ダメージを受ける
+        TakeDamage(1);
+
+        // ▼ 弾は消す
+        Destroy(bullet.gameObject);
     }
+
+
 
     void TakeDamage(int dmg)
     {
+
+        if (damageSE != null)
+            audioSource.PlayOneShot(damageSE);
+
+
         currentHP -= dmg;
         StartCoroutine(HitFlash());
 
@@ -97,9 +114,14 @@ public class ReflectMage : MonoBehaviour
             OnDeath();
         }
     }
-
     void OnDeath()
     {
+
+        if (deathSE != null)
+            audioSource.volume = 10.0f;
+        AudioSource.PlayClipAtPoint(deathSE, transform.position);
+
+
         MapManager.Instance.EnemyDefeated();
         Destroy(gameObject);
     }
