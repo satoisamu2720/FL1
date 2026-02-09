@@ -22,10 +22,14 @@ public class OpenDoor : MonoBehaviour
     private Vector3 closedPos;
     private Vector3 openPos;
 
+    private AudioSource audioSource;
+
     void Start()
     {
         closedPos = transform.position;
         openPos = closedPos + openOffset;
+
+        audioSource = GetComponent<AudioSource>();
 
         if (startOpened)
         {
@@ -70,6 +74,7 @@ public class OpenDoor : MonoBehaviour
         opened = true;
         StopAllCoroutines();
         StartCoroutine(MoveTo(openPos));
+        audioSource.Play();
     }
 
     System.Collections.IEnumerator MoveTo(Vector3 target)
