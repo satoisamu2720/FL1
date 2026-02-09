@@ -10,6 +10,7 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     private Vector2 lastMoveDir = Vector2.down;
     private Vector2 attackDir;
 
+
     [Header("çUåÇÉpÉâÉÅÅ[É^")]
     public GameObject swordHitbox;
     public float attackDuration = 0.2f;
@@ -63,11 +64,18 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     private Color originColor;
     private bool isDead = false;
 
+    // SE
+    public AudioClip swingSE;
+    AudioSource audioSource;
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         originColor = sr.color;
+        audioSource = GetComponent<AudioSource>();
+
 
         currentHP = Status.Instance.PlayerHP;
 
@@ -170,6 +178,8 @@ public class Player : MonoBehaviour, Bullets.IPlayerDamageable
     {
         attackState = AttackState.Swing;
         swordHitbox.SetActive(true);
+
+        audioSource.PlayOneShot(swingSE);
 
         float baseAngle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
         float startAngle = baseAngle - swingArc / 2f;
