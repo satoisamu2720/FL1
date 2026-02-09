@@ -37,6 +37,7 @@ public class Inventory : MonoBehaviour
         {
             ownedItemIDs.Add(id);
             Debug.Log($"{item.itemName} をインベントリに追加しました。");
+            UpdateUI();
         }
         else if (item.itemType == ItemData.ItemType.Equipment)
         {
@@ -95,6 +96,15 @@ public class Inventory : MonoBehaviour
 
     public List<int> GetOwnedIDs() => ownedItemIDs;
 
+
+    void UpdateUI()
+    {
+        ItemSlot[] slots = FindObjectsOfType<ItemSlot>(true);
+        foreach (ItemSlot slot in slots)
+        {
+            slot.Refresh();
+        }
+    }
 
     void Awake()
     {
